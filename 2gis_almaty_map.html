@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qutty Gift Алматы — Карта 2GIS (5 партнёров • 23 точки)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Стандартный Leaflet 1.9.4 + прямые тайлы 2GIS Алматы -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    }
+    .leaflet-container {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      background: #e2e8f0 !important;
+    }
+    .leaflet-popup-content-wrapper {
+      background: #ffffff !important;
+      color: #0f172a !important;
+      border-radius: 16px !important;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.28) !important;
+      padding: 2px !important;
+    }
+    .leaflet-popup-tip {
+      background: #ffffff !important;
+    }
+    .qutty-pin {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 9999px;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      border: 2px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.35);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .qutty-pin-compact {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 2px 6px;
+      border-radius: 9999px;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.3);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .qutty-pin:hover,
+    .qutty-pin-compact:hover,
+    .qutty-pin-active {
+      transform: scale(1.12);
+      border-color: #0f172a;
+      box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.72), 0 8px 18px rgba(15, 23, 42, 0.45);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased lg:h-screen lg:overflow-hidden flex flex-col">
+
+  <!-- Верхняя панель управления картой и фильтрами -->
+  <header class="bg-slate-900 border-b border-slate-800 px-3 sm:px-4 py-2 space-y-2 shrink-0">
+    <div class="max-w-7xl mx-auto flex flex-col xl:flex-row xl:items-center xl:justify-between gap-2">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              🗺️ Алматы • Живая карта перекрёстков
+            </span>
+            <a href="index.html" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-400/15 text-amber-300 border border-amber-400/30 hover:bg-amber-400/25 transition">
+              ← Вернуться к питч-прототипу
+            </a>
+          </div>
+          <h1 class="text-sm sm:text-base font-extrabold text-white mt-0.5">
+            Qutty Gift — Все 23 филиала в Алматы с точными перекрёстками
+          </h1>
+        </div>
+      </div>
+
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold text-emerald-400">
+        <span>🗺️ Карта 2GIS Алматы • 5 сетей • 23 точки</span>
+      </div>
+    </div>
+
+    <!-- Фильтры партнёров (по умолчанию активны все 5 = 23 точки) -->
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 pt-1.5 border-t border-slate-800/80">
+      <div id="filter-bar" class="flex flex-wrap items-center gap-1.5"></div>
+      <div id="engine-status" class="text-xs text-slate-400"></div>
+    </div>
+  </header>
+
+  <!-- Основной экран: слева живая карта, справа карточка и список перекрёстков -->
+  <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
+    <!-- Контейнер карты 2GIS -->
+    <section class="lg:col-span-8 relative h-[520px] lg:h-full bg-slate-900">
+      <div id="dg-map" class="w-full h-full"></div>
+
+      <!-- Плавающая верхняя панель поверх карты (отступ слева оставляет место под + / - Leaflet) -->
+      <div class="absolute top-3 left-14 right-3 z-[500] pointer-events-none flex flex-wrap items-center justify-between gap-2">
+        <div class="flex flex-wrap items-center gap-2 pointer-events-auto">
+          <button
+            onclick="fitActiveMarkers()"
+            class="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-900 text-white border border-slate-700 text-xs font-bold shadow-lg backdrop-blur cursor-pointer"
+          >
+            ⌖ Все активные (Обзор)
+          </button>
+          <button
+            onclick="zoomToSelectedBranch(17)"
+            class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold shadow-lg cursor-pointer"
+          >
+            🔍 На перекрёсток (Zoom 17)
+          </button>
+        </div>
+
+        <div id="map-layer-pill" class="pointer-events-auto px-2.5 py-1 rounded-xl bg-slate-900/90 text-slate-100 border border-slate-700 text-xs font-semibold shadow-lg backdrop-blur">
+          🗺️ 2GIS Алматы
+        </div>
+      </div>
+    </section>
+
+    <!-- Правая панель: выбранная точка + список филиалов и перекрёстков -->
+    <aside class="lg:col-span-4 bg-slate-900 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col h-[560px] lg:h-full min-h-0 overflow-hidden">
+      <!-- Карточка выбранного филиала -->
+      <div id="selected-branch-card" class="p-3 border-b border-slate-800 bg-slate-900/95 space-y-2 shrink-0"></div>
+
+      <!-- Поиск по перекрёсткам, улицам и брендам -->
+      <div class="p-2.5 border-b border-slate-800 shrink-0">
+        <input
+          id="search-input"
+          type="text"
+          oninput="state.query = this.value; renderSidebarOnly();"
+          placeholder="🔎 Поиск улицы, перекрёстка, ТРЦ или бренда..."
+          class="w-full px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-amber-400"
+        />
+      </div>
+
+      <div id="branch-list" class="flex-1 overflow-y-auto min-h-0 p-2.5 space-y-2"></div>
+    </aside>
+  </main>
+
+  <script>
+    const PARTNERS = [
+      {
+        id: 'bal',
+        brand: 'BAL Bakery',
+        short: 'BAL',
+        category: 'Кондитерская',
+        emoji: '🎂',
+        color: '#f59e0b',
+        hours: '08:00–24:00',
+        bonus: 'Бесплатный горячий капучино или кусочек Bal Cake',
+        products: [
+          'Торт «Наполеон» (1 кг) + Праздничный бокс',
+          'Торт «Медовик» (целый) + Золотые свечи',
+          'Морковный торт + 2 фирменных круассана'
+        ],
+        branches: [
+          { name: 'пр. Абылай хана, 104', lat: 43.2528, lng: 76.9430, crossing: 'уг. пр. Толе би (напротив КБТУ / пл. Астана)', district: 'Алмалинский' },
+          { name: 'пр. Достык, 89Г', lat: 43.2387, lng: 76.9571, crossing: 'уг. ул. Сатпаева (мкр. Самал-1)', district: 'Медеуский' },
+          { name: 'мкр. Коктем-1, 16', lat: 43.2287, lng: 76.9249, crossing: 'уг. ул. Тимирязева и ул. Маркова (р-н КазНУ)', district: 'Бостандыкский' },
+          { name: 'ул. Ыкылас, 8д/1', lat: 43.2586, lng: 76.9585, crossing: 'уг. ул. Зенкова (Парк 28 панфиловцев)', district: 'Медеуский' },
+          { name: 'ул. Розыбакиева, 247а', lat: 43.2024, lng: 76.8920, crossing: 'уг. пр. Аль-Фараби (ТРЦ MEGA Alma-Ata)', district: 'Бостандыкский' },
+          { name: 'пр. Сейфуллина, 506', lat: 43.2495, lng: 76.9346, crossing: 'уг. ул. Кабанбай батыра (напротив отеля Rixos)', district: 'Алмалинский' },
+          { name: 'пр. Назарбаева, 223', lat: 43.2318, lng: 76.9488, crossing: 'между ул. Жолдасбекова и пр. Аль-Фараби (Самал)', district: 'Бостандыкский' }
+        ]
+      },
+      {
+        id: 'bowler',
+        brand: 'Bowler Coffee Roasters',
+        short: 'Bowler',
+        category: 'Обжарка кофе',
+        emoji: '☕',
+        color: '#ea580c',
+        hours: '08:00–22:00',
+        bonus: 'Бесплатный фильтр V60 или большой капучино + печенье',
+        products: [
+          'Дуэт обжарщика: 2 пачки зерна по 250 г',
+          'Бокс дрип-кофе «Офис и Дом» (14 пакетов)',
+          'Кофейный сет «Гурман»: Зерно + Дрипы + Шоколад'
+        ],
+        branches: [
+          { name: 'пр. Достык, 308е', lat: 43.2123, lng: 76.9687, crossing: 'уг. ул. Оспанова (Верхний Достык / Терренкур)', district: 'Медеуский' },
+          { name: 'пр. Жибек Жолы, 81', lat: 43.2621, lng: 76.9432, crossing: 'уг. пр. Абылай хана и ул. Панфилова (Арбат)', district: 'Алмалинский' },
+          { name: 'пр. Жибек Жолы, 53', lat: 43.2618, lng: 76.9542, crossing: 'уг. ул. Пушкина (Зелёный базар)', district: 'Медеуский' },
+          { name: 'ул. Кабанбай батыра, 109', lat: 43.2504, lng: 76.9325, crossing: 'уг. ул. Масанчи (Золотой квадрат)', district: 'Алмалинский' }
+        ]
+      },
+      {
+        id: 'oreh',
+        brand: 'Сеть «Орех»',
+        short: 'Орех',
+        category: 'Гастро и Орехи',
+        emoji: '🥜',
+        color: '#10b981',
+        hours: '09:00–21:00',
+        bonus: 'Бесплатно 150 г карамелизированного пекана или баночка мёда',
+        products: [
+          'Деревянный бокс «Премиум Орехи и Горный Мёд»',
+          'Праздничный сет «Восточный Дастархан»',
+          'Гастро-бокс «Чай и Хруст»'
+        ],
+        branches: [
+          { name: 'ул. Тимирязева, 42', lat: 43.2250, lng: 76.9068, crossing: 'уг. ул. Ауэзова (КЦДС «Атакент»)', district: 'Бостандыкский' },
+          { name: 'мкр. Коктем-1, 29', lat: 43.2292, lng: 76.9218, crossing: 'наб. реки Есентай (Весновка) / уг. ул. Тимирязева', district: 'Бостандыкский' },
+          { name: 'мкр. Самал-2, 111', lat: 43.2334, lng: 76.9568, crossing: 'уг. пр. Достык и ул. Жолдасбекова (ТРЦ Dostyk Plaza)', district: 'Медеуский' },
+          { name: 'ул. Гоголя, 87', lat: 43.2600, lng: 76.9433, crossing: 'уг. ул. Панфилова (рядом со старой площадью)', district: 'Медеуский' }
+        ]
+      },
+      {
+        id: 'aromaty',
+        brand: 'Центр Аромата (Aromaty.kz)',
+        short: 'Ароматы',
+        category: 'Ароматы и Уют',
+        emoji: '🕯️',
+        color: '#8b5cf6',
+        hours: '10:00–21:00',
+        bonus: 'Бесплатный рефилл автопарфюма или аромасаше для гардероба',
+        products: [
+          'Свеча WoodWick с деревянным фитилем + Спички',
+          'Диффузор для дома Millefiori Milano (100 мл)',
+          'Сет «Авто + Офис»: Автопарфюм + Мини-диффузор'
+        ],
+        branches: [
+          { name: 'ул. Кабанбай батыра, 91', lat: 43.2512, lng: 76.9435, crossing: 'уг. ул. Панфилова (напротив ГАТОБ им. Абая)', district: 'Алмалинский' },
+          { name: 'пр. Толе би, 187', lat: 43.2521, lng: 76.8982, crossing: 'уг. пр. Гагарина и ул. Жарокова (ТД «Тумар»)', district: 'Алмалинский' },
+          { name: 'ул. Кабдолова, 1/8', lat: 43.2355, lng: 76.8315, crossing: 'уг. ул. Саин и пр. Алтынсарина (ТК «Армада»)', district: 'Ауэзовский' }
+        ]
+      },
+      {
+        id: 'romantic',
+        brand: 'Romantic Flowers',
+        short: 'Romantic',
+        category: 'Готовые букеты',
+        emoji: '🌲',
+        color: '#f43f5e',
+        hours: '00:00–24:00 (24/7)',
+        bonus: 'Бесплатная мини-коробка Raffaello или стеклянная ваза',
+        products: [
+          'Новогодний бокс из датской ели «Нобилис»',
+          'Облако из 9 кустовых роз в фирменной сумочке',
+          'Белоснежный монобукет из хризантем и эвкалипта',
+          'Пастельная композиция в шляпной коробке'
+        ],
+        branches: [
+          { name: 'пр. Абая, 115', lat: 43.2399, lng: 76.9025, crossing: 'уг. ул. Ауэзова (м. Алатау / Жарокова — 24/7)', district: 'Бостандыкский' },
+          { name: 'пр. Абылай хана, 64', lat: 43.2598, lng: 76.9430, crossing: 'уг. ул. Гоголя и пр. Жибек Жолы (ЦУМ / Арбат)', district: 'Алмалинский' },
+          { name: 'ул. Тимирязева, 20а', lat: 43.2275, lng: 76.9288, crossing: 'уг. ул. Байтурсынова (напротив КазНУ)', district: 'Бостандыкский' },
+          { name: 'ул. Радостовца, 292', lat: 43.2061, lng: 76.8976, crossing: 'уг. ул. Левитана (выше ТРЦ MEGA / Magnum)', district: 'Бостандыкский' },
+          { name: 'пр. Достык, 42', lat: 43.2515, lng: 76.9566, crossing: 'уг. ул. Кабанбай батыра и ул. Богенбай батыра', district: 'Медеуский' }
+        ]
+      }
+    ];
+
+    const ALL_IDS = PARTNERS.map(p => p.id);
+    const TOTAL_BRANCHES = PARTNERS.reduce((s, p) => s + p.branches.length, 0);
+
+    const state = {
+      activeFilters: [...ALL_IDS],
+      selectedPartnerId: 'bal',
+      selectedBranchIdx: 0,
+      selectedProductIdx: 0,
+      query: ''
+    };
+
+    let dgMap = null;
+    let leafletMarkers = [];
+
+    function getPartner(id) {
+      return PARTNERS.find(p => p.id === (id || state.selectedPartnerId)) || PARTNERS[0];
+    }
+
+    function getSelectedBranch() {
+      const p = getPartner();
+      return p.branches[state.selectedBranchIdx] || p.branches[0];
+    }
+
+    function get2GisSearchUrl(partner, br) {
+      return 'https://2gis.kz/almaty/search/' + encodeURIComponent(`${partner.brand} ${br.name} Алматы`);
+    }
+
+    function showAllPartners() {
+      state.activeFilters = [...ALL_IDS];
+      syncAll();
+      fitActiveMarkers();
+    }
+
+    function togglePartnerFilter(id) {
+      if (state.activeFilters.length === ALL_IDS.length) {
+        state.activeFilters = [id];
+        if (state.selectedPartnerId !== id) {
+          state.selectedPartnerId = id;
+          state.selectedBranchIdx = 0;
+          state.selectedProductIdx = 0;
+        }
+      } else if (state.activeFilters.includes(id)) {
+        const next = state.activeFilters.filter(x => x !== id);
+        if (next.length === 0) {
+          state.activeFilters = [...ALL_IDS];
+        } else {
+          state.activeFilters = next;
+          if (!state.activeFilters.includes(state.selectedPartnerId)) {
+            state.selectedPartnerId = state.activeFilters[0];
+            state.selectedBranchIdx = 0;
+            state.selectedProductIdx = 0;
+          }
+        }
+      } else {
+        state.activeFilters = [...state.activeFilters, id];
+        if (state.selectedPartnerId !== id) {
+          state.selectedPartnerId = id;
+          state.selectedBranchIdx = 0;
+          state.selectedProductIdx = 0;
+        }
+      }
+      syncAll();
+      fitActiveMarkers();
+    }
+
+    function selectBranch(partnerId, branchIdx, shouldZoom = true) {
+      if (state.selectedPartnerId !== partnerId) {
+        state.selectedPartnerId = partnerId;
+        state.selectedProductIdx = 0;
+      }
+      state.selectedBranchIdx = branchIdx;
+      syncAll(true);
+      if (shouldZoom) zoomToSelectedBranch(16);
+    }
+
+    function selectBox(idx) {
+      state.selectedProductIdx = idx;
+      syncAll(false);
+    }
+
+    function buildPopupHtml(partner, br) {
+      const gisUrl = get2GisSearchUrl(partner, br);
+      const prod = partner.products[state.selectedProductIdx] || partner.products[0];
+      return `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#ffffff; color: #0f172a; min-width: 245px; font-size: 12px; line-height: 1.45;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:4px;">
+            <span style="font-weight:800; font-size:13px; color:${partner.color};">${partner.emoji} ${partner.brand}</span>
+            <span style="background:#dcfce7; color:#166534; font-weight:700; font-size:10px; padding:2px 6px; border-radius:99px;">${partner.hours}</span>
+          </div>
+          <div style="font-weight:700; color:#0f172a; margin-bottom:2px;">📍 ${br.name} (${br.district} р-н)</div>
+          <div style="background:#fef3c7; border:1px solid #f59e0b; border-radius:8px; padding:6px 8px; margin:6px 0; color:#0f172a;">
+            <b>🔀 Перекрёсток:</b> ${br.crossing}
+          </div>
+          <div style="color:#047857; font-weight:700; margin-bottom:4px;">🎁 Бонус: ${partner.bonus}</div>
+          <div style="color:#334155; font-size:11px; margin-bottom:7px;"><b>Бокс 15 000 ₸:</b> ${prod}</div>
+          <a href="${gisUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block; background:#16a34a; color:#ffffff; text-decoration:none; font-weight:700; padding:6px 10px; border-radius:8px; font-size:11px;">
+            Открыть карточку в 2GIS.kz ↗
+          </a>
+        </div>
+      `;
+    }
+
+    function renderLeafletMarkers(openSelectedPopup = true) {
+      if (!dgMap || typeof L === 'undefined') return;
+
+      const selectedEntry = leafletMarkers.find(
+        m => m.partnerId === state.selectedPartnerId && m.branchIdx === state.selectedBranchIdx
+      );
+      const wasSelectedOpen = selectedEntry ? selectedEntry.marker.isPopupOpen() : false;
+
+      leafletMarkers.forEach(({ marker }) => {
+        try { dgMap.removeLayer(marker); } catch (e) {}
+      });
+      leafletMarkers = [];
+
+      const z = dgMap.getZoom();
+
+      PARTNERS.filter(p => state.activeFilters.includes(p.id)).forEach(partner => {
+        partner.branches.forEach((br, idx) => {
+          const isSelected = partner.id === state.selectedPartnerId && idx === state.selectedBranchIdx;
+          const compactMode = z <= 13 && !isSelected;
+
+          const pinClass = compactMode ? 'qutty-pin-compact' : 'qutty-pin';
+          const activeClass = isSelected ? 'qutty-pin-active' : '';
+          const iconSize = compactMode ? [74, 24] : [116, 28];
+          const iconAnchor = compactMode ? [37, 12] : [58, 14];
+
+          const icon = L.divIcon({
+            className: 'qutty-leaflet-wrap',
+            html: `<div style="display:flex;justify-content:center;"><div class="${pinClass} ${activeClass}" style="background:${partner.color}">${partner.emoji} ${partner.short}</div></div>`,
+            iconSize,
+            iconAnchor
+          });
+
+          const marker = L.marker([br.lat, br.lng], {
+            icon,
+            zIndexOffset: isSelected ? 1000 : 0
+          }).addTo(dgMap);
+
+          marker.bindPopup(buildPopupHtml(partner, br), {
+            maxWidth: 310,
+            autoPan: openSelectedPopup
+          });
+
+          marker.on('click', () => {
+            if (state.selectedPartnerId !== partner.id) {
+              state.selectedPartnerId = partner.id;
+              state.selectedProductIdx = 0;
+            }
+            state.selectedBranchIdx = idx;
+            renderHeaderAndSidebar();
+            renderLeafletMarkers(true);
+          });
+
+          leafletMarkers.push({ partnerId: partner.id, branchIdx: idx, marker, lat: br.lat, lng: br.lng });
+
+          if (isSelected && (openSelectedPopup || wasSelectedOpen)) {
+            marker.openPopup();
+          }
+        });
+      });
+    }
+
+    function fitActiveMarkers() {
+      const coords = [];
+      PARTNERS.filter(p => state.activeFilters.includes(p.id)).forEach(p => {
+        p.branches.forEach(br => coords.push(br));
+      });
+      if (coords.length === 0 || !dgMap) return;
+
+      if (coords.length === 1) {
+        dgMap.setView([coords[0].lat, coords[0].lng], 15);
+      } else {
+        const bounds = coords.map(c => [c.lat, c.lng]);
+        dgMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+      }
+    }
+
+    function zoomToSelectedBranch(zoomLevel = 16) {
+      const br = getSelectedBranch();
+      if (!dgMap) return;
+      dgMap.setView([br.lat, br.lng], zoomLevel);
+      const found = leafletMarkers.find(m => m.partnerId === state.selectedPartnerId && m.branchIdx === state.selectedBranchIdx);
+      if (found) setTimeout(() => found.marker.openPopup(), 100);
+    }
+
+    function renderEngineStatus() {
+      const status = document.getElementById('engine-status');
+      const visibleCount = PARTNERS.filter(p => state.activeFilters.includes(p.id)).reduce((s, p) => s + p.branches.length, 0);
+      status.innerHTML = `Показано точек: <b class="text-white">${visibleCount}</b> из ${TOTAL_BRANCHES} • Клик по бренду изолирует сеть`;
+    }
+
+    function renderFilterBar() {
+      const isAll = state.activeFilters.length === ALL_IDS.length;
+      document.getElementById('filter-bar').innerHTML = `
+        <button
+          onclick="showAllPartners()"
+          class="px-2.5 py-1 rounded-full border text-xs font-extrabold transition cursor-pointer ${
+            isAll
+              ? 'bg-white text-slate-950 border-white'
+              : 'bg-slate-950 text-slate-300 border-slate-700 hover:border-slate-500'
+          }"
+        >
+          🗺️ Все 5 сетей (${TOTAL_BRANCHES})
+        </button>
+        ${PARTNERS.map(p => {
+          const on = state.activeFilters.includes(p.id);
+          const solo = state.activeFilters.length === 1 && state.activeFilters[0] === p.id;
+          return `
+            <button
+              onclick="togglePartnerFilter('${p.id}')"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold transition cursor-pointer ${
+                solo
+                  ? 'text-white shadow-sm'
+                  : on
+                    ? 'bg-slate-950 text-slate-100 border-slate-700 hover:border-slate-500'
+                    : 'bg-slate-950/40 text-slate-500 border-slate-800 opacity-55'
+              }"
+              style="${solo ? `background:${p.color}33; border-color:${p.color};` : ''}"
+            >
+              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${p.color}"></span>
+              <span>${p.emoji} ${p.short} (${p.branches.length})</span>
+              <span class="text-[10px]">${on ? '✓' : ''}</span>
+            </button>
+          `;
+        }).join('')}
+      `;
+    }
+
+    function renderSelectedBranchCard() {
+      const p = getPartner();
+      const br = getSelectedBranch();
+      const gisUrl = get2GisSearchUrl(p, br);
+
+      document.getElementById('selected-branch-card').innerHTML = `
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="w-2.5 h-2.5 rounded-full" style="background:${p.color}"></span>
+              <span class="text-sm font-extrabold text-white">${p.emoji} ${p.brand}</span>
+              <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold">${br.district} р-н</span>
+            </div>
+            <div class="text-xs font-bold text-amber-300 mt-0.5">📍 ${br.name} • 🕒 ${p.hours}</div>
+          </div>
+          <a
+            href="${gisUrl}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shrink-0"
+          >
+            2GIS.kz ↗
+          </a>
+        </div>
+
+        <div class="p-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200">
+          <b class="text-white">🔀 Точный перекрёсток:</b> ${br.crossing}
+        </div>
+
+        <div class="text-xs font-semibold text-emerald-400">
+          🎁 Бесплатный бонус: ${p.bonus}
+        </div>
+
+        <div class="space-y-1">
+          <div class="text-[11px] font-bold text-slate-400 uppercase">Подарочные боксы 15 000 ₸:</div>
+          <div class="flex flex-wrap gap-1">
+            ${p.products.map((prod, i) => `
+              <button
+                onclick="selectBox(${i})"
+                class="px-2 py-1 rounded-lg border text-[11px] font-semibold text-left transition cursor-pointer ${
+                  i === state.selectedProductIdx
+                    ? 'bg-amber-400/20 border-amber-400 text-amber-200'
+                    : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-600'
+                }"
+              >${i === state.selectedProductIdx ? '✓ ' : ''}${prod}</button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSidebarOnly() {
+      const q = state.query.trim().toLowerCase();
+      const rows = [];
+      PARTNERS.filter(p => state.activeFilters.includes(p.id)).forEach(p => {
+        p.branches.forEach((br, idx) => {
+          const hay = `${p.brand} ${br.name} ${br.crossing} ${br.district}`.toLowerCase();
+          if (!q || hay.includes(q)) {
+            rows.push({ partner: p, br, idx });
+          }
+        });
+      });
+
+      document.getElementById('branch-list').innerHTML = rows.length === 0
+        ? `<div class="text-xs text-slate-400 p-4 text-center">Ничего не найдено по запросу «${state.query}».</div>`
+        : rows.map(({ partner, br, idx }) => {
+            const active = partner.id === state.selectedPartnerId && idx === state.selectedBranchIdx;
+            return `
+              <button
+                onclick="selectBranch('${partner.id}', ${idx}, true)"
+                class="w-full text-left p-2.5 rounded-xl border transition cursor-pointer space-y-1 ${
+                  active
+                    ? 'bg-amber-400/15 border-amber-400'
+                    : 'bg-slate-950/70 border-slate-800 hover:border-slate-600'
+                }"
+              >
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-xs font-extrabold text-white">${partner.emoji} ${partner.brand}</span>
+                  <span class="text-[11px] text-slate-400">${br.district}</span>
+                </div>
+                <div class="text-xs font-bold text-amber-300">${br.name}</div>
+                <div class="text-[11px] text-slate-300 leading-snug">🔀 ${br.crossing}</div>
+              </button>
+            `;
+          }).join('');
+    }
+
+    function renderHeaderAndSidebar() {
+      renderFilterBar();
+      renderEngineStatus();
+      renderSelectedBranchCard();
+      renderSidebarOnly();
+    }
+
+    function syncAll(openSelectedPopup = true) {
+      renderHeaderAndSidebar();
+      renderLeafletMarkers(openSelectedPopup);
+    }
+
+    renderHeaderAndSidebar();
+
+    // Инициализация Leaflet + прямые тайлы 2GIS
+    if (typeof window.L !== 'undefined') {
+      dgMap = L.map('dg-map', {
+        center: [43.241, 76.926],
+        zoom: 12,
+        zoomControl: true
+      });
+
+      L.tileLayer('https://{s}.maps.2gis.com/tiles?x={x}&y={y}&z={z}&v=1', {
+        subdomains: ['tile0', 'tile1', 'tile2', 'tile3'],
+        maxZoom: 18,
+        attribution: '© 2GIS'
+      }).addTo(dgMap);
+
+      renderLeafletMarkers(true);
+
+      dgMap.on('zoomend', () => {
+        renderLeafletMarkers(false);
+      });
+    } else {
+      document.getElementById('dg-map').innerHTML = `
+        <div class="h-full flex items-center justify-center p-6 text-center text-sm text-slate-300">
+          Не удалось загрузить библиотеку карты Leaflet (проверьте подключение к интернету).
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

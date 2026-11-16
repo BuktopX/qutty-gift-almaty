@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qutty Gift Алматы — Прототип + Живая карта 2GIS (23 точки)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Стандартный Leaflet 1.9.4 + прямые тайлы 2GIS Алматы -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --card-border: #e2e8f0;
+      --foreground: #0f172a;
+      --muted-foreground: #475569;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b1120;
+        --card: #111827;
+        --border: #1e293b;
+        --card-border: #1e293b;
+        --foreground: #f8fafc;
+        --muted-foreground: #94a3b8;
+      }
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    }
+    .leaflet-container {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif !important;
+      background: #e2e8f0 !important;
+    }
+    .leaflet-popup-content-wrapper {
+      background: #ffffff !important;
+      color: #0f172a !important;
+      border-radius: 16px !important;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25) !important;
+      padding: 2px !important;
+    }
+    .leaflet-popup-tip {
+      background: #ffffff !important;
+    }
+    .qutty-pin {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      border: 2px solid #ffffff;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.35);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .qutty-pin-compact {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 2px 6px;
+      border-radius: 9999px;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 800;
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 2px 7px rgba(15, 23, 42, 0.3);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .qutty-pin-active {
+      transform: scale(1.12);
+      border-color: #0f172a;
+      box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.72), 0 6px 14px rgba(15, 23, 42, 0.45);
+    }
+    @keyframes shakeGift {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      15% { transform: rotate(-6deg) scale(1.04); }
+      30% { transform: rotate(6deg) scale(1.06); }
+      45% { transform: rotate(-5deg) scale(1.06); }
+      60% { transform: rotate(4deg) scale(1.04); }
+      75% { transform: rotate(-2deg) scale(1.02); }
+    }
+    @keyframes popReveal {
+      0% { opacity: 0; transform: translateY(18px) scale(0.94); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes lidFly {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-48px) rotate(-14deg); opacity: 0; }
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-10px) rotate(0deg) scale(1); opacity: 1; }
+      100% { transform: translateY(240px) rotate(520deg) scale(0.75); opacity: 0; }
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(1.35); }
+    }
+    .gift-shake {
+      animation: shakeGift 1.8s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+    .gift-lid-open {
+      animation: lidFly 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .pop-reveal {
+      animation: popReveal 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .pulse-live {
+      animation: pulseDot 1.6s ease-in-out infinite;
+    }
+    .confetti-piece {
+      position: absolute;
+      width: 8px;
+      height: 12px;
+      border-radius: 2px;
+      pointer-events: none;
+      animation: confettiFall 1.35s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+    }
+    .phone-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .phone-scroll::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6">
+  <div class="max-w-6xl mx-auto space-y-4">
+
+    <!-- Верхняя панель управления и переключатель режимов -->
+    <header class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 shadow-sm space-y-3">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-500 border border-amber-400/40">
+              🇰🇿 Алматы • 5 партнёров • 23 точки в 2GIS
+            </span>
+            <a
+              href="2gis_almaty_map.html"
+              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 hover:opacity-85 transition"
+            >
+              🗺️ Полный экран 2GIS ↗
+            </a>
+            <span class="text-xs text-[var(--muted-foreground)] font-medium">
+              Тариф 15 000 ₸ «Всё включено»
+            </span>
+          </div>
+          <h1 class="text-lg md:text-xl font-bold tracking-tight text-[var(--foreground)]">
+            Qutty Gift — Питч-прототип и живая карта 2GIS Алматы
+          </h1>
+        </div>
+
+        <!-- Формат подарка и сброс демо -->
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="inline-flex items-center px-3 py-2 rounded-xl bg-amber-400 text-slate-950 text-xs font-semibold shadow-sm">
+            ✨ Без адреса: «Забери в любую минуту»
+          </div>
+          <button
+            onclick="resetDemo()"
+            class="px-3 py-2 rounded-xl text-xs font-medium border border-[var(--border)] bg-[var(--background)] hover:opacity-80 transition cursor-pointer shrink-0"
+            title="Сбросить демо на 1-й шаг"
+          >
+            ↺ Сбросить
+          </button>
+        </div>
+      </div>
+
+      <!-- Динамическая подсказка для питча -->
+      <div id="pitch-banner" class="rounded-xl p-3 border text-xs flex flex-col md:flex-row md:items-center md:justify-between gap-2 transition-colors">
+      </div>
+
+      <!-- Навигация по 4 шагам -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+        <button onclick="goToStep(1)" id="nav-step-1" class="step-pill text-left px-3 py-2 rounded-xl border text-xs transition cursor-pointer">
+          <div class="font-semibold">1. Выбор набора</div>
+          <div class="text-[var(--muted-foreground)] truncate">Партнёры, боксы и 2GIS</div>
+        </button>
+        <button onclick="goToStep(2)" id="nav-step-2" class="step-pill text-left px-3 py-2 rounded-xl border text-xs transition cursor-pointer">
+          <div class="font-semibold">2. WhatsApp и распаковка</div>
+          <div class="text-[var(--muted-foreground)] truncate">Без ценников на экране</div>
+        </button>
+        <button onclick="goToStep(3)" id="nav-step-3" class="step-pill text-left px-3 py-2 rounded-xl border text-xs transition cursor-pointer">
+          <div class="font-semibold" id="nav-step-3-title">3. Самовывоз+Бонус / Курьер</div>
+          <div class="text-[var(--muted-foreground)] truncate" id="nav-step-3-sub">23 точки в 2GIS и QR-бонус</div>
+        </button>
+        <button onclick="goToStep(4)" id="nav-step-4" class="step-pill text-left px-3 py-2 rounded-xl border text-xs transition cursor-pointer">
+          <div class="font-semibold">4. Статус и выплата</div>
+          <div class="text-[var(--muted-foreground)] truncate">Бот и Яндекс Доставка</div>
+        </button>
+      </div>
+    </header>
+
+    <!-- Основной экран: Мобильный телефон + Живая 2GIS Карта + Бот + Экономика -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+      <!-- Левая колонка: Симулятор смартфона -->
+      <div id="phone-col" class="lg:col-span-5 flex flex-col items-center">
+        <div class="w-full max-w-[392px] rounded-[2.6rem] p-3 bg-neutral-900 border-4 border-neutral-800 shadow-2xl">
+          <div class="flex items-center justify-between px-5 pt-1 pb-2 text-[11px] font-semibold text-neutral-300">
+            <span>02:20</span>
+            <div class="w-24 h-4 bg-black rounded-full mx-auto flex items-center justify-end pr-2">
+              <span class="w-2 h-2 rounded-full bg-neutral-800 border border-neutral-700"></span>
+            </div>
+            <span class="flex items-center gap-1">5G 🔋</span>
+          </div>
+
+          <div id="phone-viewport" class="bg-stone-50 text-slate-900 rounded-[2rem] h-[640px] overflow-y-auto phone-scroll relative flex flex-col shadow-inner">
+          </div>
+
+          <div class="pt-2.5 pb-1 flex justify-center">
+            <div class="w-28 h-1 rounded-full bg-neutral-700"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Правая колонка: Живая карта 2GIS + Бот партнёра + Экономика -->
+      <div id="right-col" class="lg:col-span-7 space-y-4">
+
+        <!-- Карточка живой карты 2GIS -->
+        <section id="map-panel" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 space-y-3 shadow-sm">
+          <div id="map-header-controls" class="space-y-2"></div>
+
+          <!-- Постоянный контейнер для живой карты 2GIS -->
+          <div class="relative rounded-xl overflow-hidden border border-[var(--border)] bg-slate-900">
+            <div id="dg-main-map" class="w-full h-[320px]"></div>
+            <div class="absolute top-2.5 left-14 right-2.5 z-[400] pointer-events-none flex flex-wrap items-center justify-between gap-1.5">
+              <div class="flex flex-wrap gap-1.5 pointer-events-auto">
+                <button
+                  onclick="fitMainDgMarkers()"
+                  class="px-2.5 py-1 rounded-lg bg-slate-900/90 text-white text-[11px] font-bold border border-slate-700 shadow cursor-pointer"
+                >
+                  ⌖ Весь город / Фильтр
+                </button>
+                <button
+                  onclick="zoomMainDgBranch()"
+                  class="px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 text-[11px] font-extrabold shadow cursor-pointer"
+                >
+                  🔍 На перекрёсток
+                </button>
+                <button
+                  id="btn-map-overlay-fs"
+                  onclick="toggleMapFullscreen()"
+                  class="px-2.5 py-1 rounded-lg bg-slate-900/90 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold shadow cursor-pointer hover:bg-slate-800"
+                >
+                  ⛶ Развернуть 2GIS на весь экран
+                </button>
+              </div>
+              <span class="px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-700 text-emerald-400 text-[11px] font-bold shadow">
+                🗺️ 2GIS Алматы
+              </span>
+            </div>
+          </div>
+
+          <div id="map-selected-card"></div>
+          <div id="map-crossing-directory" class="max-h-40 overflow-y-auto phone-scroll grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1"></div>
+        </section>
+
+        <!-- Симулятор Telegram-бота партнёра -->
+        <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">
+          <div class="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-full bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-base">
+                🤖
+              </div>
+              <div>
+                <div class="text-sm font-bold flex items-center gap-2">
+                  <span>@QuttyPartnerBot</span>
+                  <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500 font-semibold">
+                    0% интеграции с кассой
+                  </span>
+                </div>
+                <div class="text-xs text-[var(--muted-foreground)]">
+                  Telegram для персонала • <span id="bot-merchant-name">BAL Bakery (7 филиалов)</span>
+                </div>
+              </div>
+            </div>
+            <span class="text-xs text-[var(--muted-foreground)] font-mono" id="bot-order-id">#QG-8421</span>
+          </div>
+
+          <div id="bot-feed" class="p-4 space-y-3 max-h-[240px] overflow-y-auto phone-scroll bg-[var(--background)]/40">
+          </div>
+
+          <div id="bot-actions" class="px-4 py-3 border-t border-[var(--border)] bg-[var(--card)] space-y-2">
+          </div>
+        </section>
+
+        <!-- Финансовая сводка тарифа 15 000 ₸ -->
+        <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <h2 class="text-sm font-bold">Экономика тарифа 15 000 ₸ «Всё включено»</h2>
+            <span id="scorecard-badge" class="text-xs font-semibold px-2 py-0.5 rounded-full"></span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+            <div id="card-econ-pickup" class="p-3 rounded-xl border transition-all"></div>
+            <div id="card-econ-delivery" class="p-3 rounded-xl border transition-all"></div>
+          </div>
+
+          <div id="unit-econ-box" class="rounded-xl p-3 bg-[var(--background)] border border-[var(--border)] text-xs space-y-1.5"></div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- 5 Зафиксированных партнёров Алматы (23 точки с точными координатами и перекрёстками) ----------
+    const GIFTS = [
+      {
+        id: 'bal',
+        category: 'Кондитерская',
+        brand: 'BAL Bakery',
+        shortBrand: 'BAL',
+        emoji: '🎂',
+        pinColor: '#f59e0b',
+        title: 'Праздничный целый торт',
+        shortTitle: 'Торт в коробке',
+        allInPrice: 15000,
+        giftRetailValue: 12500,
+        fulfillmentPool: 2500,
+        hours: '08:00–24:00',
+        branchCount: '7 филиалов в Алматы',
+        branchCoords: [
+          { name: 'пр. Абылай хана, 104', lat: 43.2528, lng: 76.9430, crossing: 'уг. пр. Толе би (напротив КБТУ / пл. Астана)', district: 'Алмалинский' },
+          { name: 'пр. Достык, 89Г', lat: 43.2387, lng: 76.9571, crossing: 'уг. ул. Сатпаева (мкр. Самал-1)', district: 'Медеуский' },
+          { name: 'мкр. Коктем-1, 16', lat: 43.2287, lng: 76.9249, crossing: 'уг. ул. Тимирязева и ул. Маркова (р-н КазНУ)', district: 'Бостандыкский' },
+          { name: 'ул. Ыкылас, 8д/1', lat: 43.2586, lng: 76.9585, crossing: 'уг. ул. Зенкова (Парк 28 панфиловцев)', district: 'Медеуский' },
+          { name: 'ул. Розыбакиева, 247а', lat: 43.2024, lng: 76.8920, crossing: 'уг. пр. Аль-Фараби (ТРЦ MEGA Alma-Ata)', district: 'Бостандыкский' },
+          { name: 'пр. Сейфуллина, 506', lat: 43.2495, lng: 76.9346, crossing: 'уг. ул. Кабанбай батыра (напротив отеля Rixos)', district: 'Алмалинский' },
+          { name: 'пр. Назарбаева, 223', lat: 43.2318, lng: 76.9488, crossing: 'между ул. Жолдасбекова и пр. Аль-Фараби (Самал)', district: 'Бостандыкский' }
+        ],
+        bonusName: 'Бесплатный горячий капучино или кусочек Bal Cake',
+        bonusRetail: 1800,
+        bonusWholesaleCost: 1500,
+        partnerPct: 20,
+        products: [
+          {
+            title: 'Торт «Наполеон» (1 кг) + Праздничный бокс',
+            desc: 'Многослойный торт с заварным кремом в коробке с лентой',
+            tag: 'Хит продаж'
+          },
+          {
+            title: 'Торт «Медовик» (целый) + Золотые свечи',
+            desc: 'Фирменный медовый торт с набором праздничных свечей',
+            tag: 'Для всей семьи'
+          },
+          {
+            title: 'Морковный торт + 2 фирменных круассана',
+            desc: 'Пряный морковный торт с крем-чизом и пара круассанов',
+            tag: 'Новинка'
+          }
+        ],
+        accentBg: 'from-amber-100 via-orange-50 to-rose-100',
+        svg: `
+          <svg viewBox="0 0 120 100" class="w-full h-full">
+            <ellipse cx="60" cy="84" rx="44" ry="8" fill="#fde68a" />
+            <rect x="24" y="45" width="72" height="35" rx="7" fill="#fffbeb" stroke="#d97706" stroke-width="2.5"/>
+            <line x1="24" y1="56" x2="96" y2="56" stroke="#fbbf24" stroke-width="2"/>
+            <line x1="24" y1="68" x2="96" y2="68" stroke="#fbbf24" stroke-width="2"/>
+            <path d="M24 46 Q34 54 44 46 Q54 54 64 46 Q74 54 84 46 Q92 52 96 46 L96 42 Q96 36 88 36 L32 36 Q24 36 24 42 Z" fill="#f59e0b"/>
+            <circle cx="48" cy="31" r="5" fill="#e11d48"/>
+            <circle cx="60" cy="29" r="5.5" fill="#fb7185"/>
+            <circle cx="72" cy="31" r="5" fill="#e11d48"/>
+            <rect x="58" y="13" width="4" height="12" rx="1.5" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
+            <path d="M60 6 Q64 10 60 14 Q56 10 60 6 Z" fill="#f97316"/>
+          </svg>
+        `
+      },
+      {
+        id: 'bowler',
+        category: 'Обжарка кофе',
+        brand: 'Bowler Coffee Roasters',
+        shortBrand: 'Bowler',
+        emoji: '☕',
+        pinColor: '#ea580c',
+        title: 'Свежеобжаренный кофе и дрип-боксы',
+        shortTitle: 'Набор от обжарщика',
+        allInPrice: 15000,
+        giftRetailValue: 12500,
+        fulfillmentPool: 2500,
+        hours: '08:00–22:00',
+        branchCount: '4 филиала в Алматы',
+        branchCoords: [
+          { name: 'пр. Достык, 308е', lat: 43.2123, lng: 76.9687, crossing: 'уг. ул. Оспанова (Верхний Достык / Терренкур)', district: 'Медеуский' },
+          { name: 'пр. Жибек Жолы, 81', lat: 43.2621, lng: 76.9432, crossing: 'уг. пр. Абылай хана и ул. Панфилова (Арбат)', district: 'Алмалинский' },
+          { name: 'пр. Жибек Жолы, 53', lat: 43.2618, lng: 76.9542, crossing: 'уг. ул. Пушкина (Зелёный базар)', district: 'Медеуский' },
+          { name: 'ул. Кабанбай батыра, 109', lat: 43.2504, lng: 76.9325, crossing: 'уг. ул. Масанчи (Золотой квадрат)', district: 'Алмалинский' }
+        ],
+        bonusName: 'Бесплатный фильтр V60 или большой капучино + печенье',
+        bonusRetail: 1800,
+        bonusWholesaleCost: 1500,
+        partnerPct: 20,
+        products: [
+          {
+            title: 'Дуэт обжарщика: 2 пачки зерна по 250 г',
+            desc: 'Эфиопия + Бразилия, свежая алматинская обжарка (любой помол бесплатно)',
+            tag: 'Для ценителей'
+          },
+          {
+            title: 'Бокс дрип-кофе «Офис и Дом» (14 пакетов)',
+            desc: 'Ассорти спешелти дрипов — заваривается прямо в чашке',
+            tag: 'Без кофемашины'
+          },
+          {
+            title: 'Кофейный сет «Гурман»: Зерно + Дрипы + Шоколад',
+            desc: '250 г зерна, 6 дрип-пакетов и ремесленный шоколад',
+            tag: 'Комбо-бокс'
+          }
+        ],
+        accentBg: 'from-stone-200 via-amber-50 to-orange-100',
+        svg: `
+          <svg viewBox="0 0 120 100" class="w-full h-full">
+            <ellipse cx="60" cy="86" rx="44" ry="7" fill="#d6d3d1" />
+            <rect x="26" y="32" width="32" height="50" rx="5" fill="#44403c" stroke="#1c1917" stroke-width="2.5"/>
+            <rect x="31" y="44" width="22" height="18" rx="3" fill="#fef3c7"/>
+            <rect x="62" y="38" width="32" height="44" rx="5" fill="#78350f" stroke="#451a03" stroke-width="2.5"/>
+            <rect x="67" y="49" width="22" height="16" rx="3" fill="#fde68a"/>
+            <circle cx="42" cy="53" r="4" fill="#78350f"/>
+            <circle cx="78" cy="57" r="4" fill="#44403c"/>
+            <path d="M52 22 Q56 14 52 10 M66 24 Q70 16 66 12" stroke="#a8a29e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          </svg>
+        `
+      },
+      {
+        id: 'oreh',
+        category: 'Гастро и Орехи',
+        brand: 'Сеть «Орех»',
+        shortBrand: 'Орех',
+        emoji: '🥜',
+        pinColor: '#10b981',
+        title: 'Премиальный орехово-медовый бокс',
+        shortTitle: 'Гастро-бокс',
+        allInPrice: 15000,
+        giftRetailValue: 12500,
+        fulfillmentPool: 2500,
+        hours: '09:00–21:00',
+        branchCount: '4 филиала в Алматы',
+        branchCoords: [
+          { name: 'ул. Тимирязева, 42', lat: 43.2250, lng: 76.9068, crossing: 'уг. ул. Ауэзова (КЦДС «Атакент»)', district: 'Бостандыкский' },
+          { name: 'мкр. Коктем-1, 29', lat: 43.2292, lng: 76.9218, crossing: 'наб. реки Есентай (Весновка) / уг. ул. Тимирязева', district: 'Бостандыкский' },
+          { name: 'мкр. Самал-2, 111', lat: 43.2334, lng: 76.9568, crossing: 'уг. пр. Достык и ул. Жолдасбекова (ТРЦ Dostyk Plaza)', district: 'Медеуский' },
+          { name: 'ул. Гоголя, 87', lat: 43.2600, lng: 76.9433, crossing: 'уг. ул. Панфилова (рядом со старой площадью)', district: 'Медеуский' }
+        ],
+        bonusName: 'Бесплатно 150 г карамелизированного пекана или баночка мёда',
+        bonusRetail: 1500,
+        bonusWholesaleCost: 1500,
+        partnerPct: 20,
+        products: [
+          {
+            title: 'Деревянный бокс «Премиум Орехи и Горный Мёд»',
+            desc: 'Макадамия, пекан, фисташки, кешью и баночка горного мёда',
+            tag: 'К столу'
+          },
+          {
+            title: 'Праздничный сет «Восточный Дастархан»',
+            desc: 'Королевские финики, манго, инжир, миндаль и лукум',
+            tag: 'Без сахара'
+          },
+          {
+            title: 'Гастро-бокс «Чай и Хруст»',
+            desc: 'Отборные орехи, крем-мёд с ягодами и горный травяной чай',
+            tag: 'Уютный сет'
+          }
+        ],
+        accentBg: 'from-amber-100 via-yellow-50 to-emerald-50',
+        svg: `
+          <svg viewBox="0 0 120 100" class="w-full h-full">
+            <rect x="20" y="34" width="80" height="50" rx="8" fill="#d97706" stroke="#78350f" stroke-width="2.5"/>
+            <rect x="26" y="40" width="32" height="18" rx="4" fill="#fef3c7"/>
+            <rect x="62" y="40" width="32" height="18" rx="4" fill="#fde68a"/>
+            <rect x="26" y="61" width="32" height="18" rx="4" fill="#fed7aa"/>
+            <rect x="62" y="61" width="32" height="18" rx="4" fill="#fef08a"/>
+            <circle cx="38" cy="49" r="4" fill="#92400e"/><circle cx="48" cy="49" r="4" fill="#78350f"/>
+            <circle cx="74" cy="49" r="5" fill="#f59e0b"/><circle cx="84" cy="49" r="4" fill="#b45309"/>
+            <circle cx="38" cy="70" r="4" fill="#15803d"/><circle cx="48" cy="70" r="4" fill="#166534"/>
+            <circle cx="78" cy="70" r="6" fill="#eab308" stroke="#a16207" stroke-width="1.5"/>
+          </svg>
+        `
+      },
+      {
+        id: 'aromaty',
+        category: 'Ароматы и Уют',
+        brand: 'Центр Аромата (Aromaty.kz)',
+        shortBrand: 'Ароматы',
+        emoji: '🕯️',
+        pinColor: '#8b5cf6',
+        title: 'Ароматы для дома и авто',
+        shortTitle: 'Свечи и диффузоры',
+        allInPrice: 15000,
+        giftRetailValue: 12500,
+        fulfillmentPool: 2500,
+        hours: '10:00–21:00',
+        branchCount: '3 филиала в Алматы',
+        branchCoords: [
+          { name: 'ул. Кабанбай батыра, 91', lat: 43.2512, lng: 76.9435, crossing: 'уг. ул. Панфилова (напротив ГАТОБ им. Абая)', district: 'Алмалинский' },
+          { name: 'пр. Толе би, 187', lat: 43.2521, lng: 76.8982, crossing: 'уг. пр. Гагарина и ул. Жарокова (ТД «Тумар»)', district: 'Алмалинский' },
+          { name: 'ул. Кабдолова, 1/8', lat: 43.2355, lng: 76.8315, crossing: 'уг. ул. Саин и пр. Алтынсарина (ТК «Армада»)', district: 'Ауэзовский' }
+        ],
+        bonusName: 'Бесплатный рефилл автопарфюма или аромасаше для гардероба',
+        bonusRetail: 1500,
+        bonusWholesaleCost: 1500,
+        partnerPct: 20,
+        products: [
+          {
+            title: 'Свеча WoodWick с деревянным фитилем + Спички',
+            desc: 'Ароматическая свеча с эффектом потрескивания камина',
+            tag: 'Топ подарок'
+          },
+          {
+            title: 'Диффузор для дома Millefiori Milano (100 мл)',
+            desc: 'Итальянский интерьерный парфюм с ротанговыми палочками',
+            tag: 'Унисекс'
+          },
+          {
+            title: 'Сет «Авто + Офис»: Автопарфюм + Мини-диффузор',
+            desc: 'Премиальный аромат в машину и диффузор на рабочий стол',
+            tag: 'Для мужчин и авто'
+          }
+        ],
+        accentBg: 'from-violet-100 via-purple-50 to-amber-50',
+        svg: `
+          <svg viewBox="0 0 120 100" class="w-full h-full">
+            <ellipse cx="60" cy="86" rx="40" ry="7" fill="#ddd6fe" />
+            <rect x="28" y="46" width="32" height="36" rx="6" fill="#fef3c7" stroke="#7c3aed" stroke-width="2.5"/>
+            <path d="M44 26 Q49 34 44 40 Q39 34 44 26 Z" fill="#f97316"/>
+            <rect x="68" y="42" width="24" height="40" rx="8" fill="#ede9fe" stroke="#6d28d9" stroke-width="2.5"/>
+            <rect x="75" y="34" width="10" height="8" rx="2" fill="#5b21b6"/>
+            <line x1="78" y1="34" x2="70" y2="16" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="80" y1="34" x2="80" y2="14" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="82" y1="34" x2="90" y2="16" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        `
+      },
+      {
+        id: 'romantic',
+        category: 'Готовые букеты',
+        brand: 'Romantic Flowers',
+        shortBrand: 'Romantic',
+        emoji: '🌲',
+        pinColor: '#f43f5e',
+        title: 'Стандартизированные букеты',
+        shortTitle: 'Фикс. букеты',
+        allInPrice: 15000,
+        giftRetailValue: 12500,
+        fulfillmentPool: 2500,
+        hours: '00:00–24:00 (24/7)',
+        branchCount: '5 точек на карте (сеть 10+)',
+        branchCoords: [
+          { name: 'пр. Абая, 115', lat: 43.2399, lng: 76.9025, crossing: 'уг. ул. Ауэзова (м. Алатау / Жарокова — 24/7)', district: 'Бостандыкский' },
+          { name: 'пр. Абылай хана, 64', lat: 43.2598, lng: 76.9430, crossing: 'уг. ул. Гоголя и пр. Жибек Жолы (ЦУМ / Арбат)', district: 'Алмалинский' },
+          { name: 'ул. Тимирязева, 20а', lat: 43.2275, lng: 76.9288, crossing: 'уг. ул. Байтурсынова (напротив КазНУ)', district: 'Бостандыкский' },
+          { name: 'ул. Радостовца, 292', lat: 43.2061, lng: 76.8976, crossing: 'уг. ул. Левитана (выше ТРЦ MEGA / Magnum)', district: 'Бостандыкский' },
+          { name: 'пр. Достык, 42', lat: 43.2515, lng: 76.9566, crossing: 'уг. ул. Кабанбай батыра и ул. Богенбай батыра', district: 'Медеуский' }
+        ],
+        bonusName: 'Бесплатная мини-коробка Raffaello или стеклянная ваза',
+        bonusRetail: 1500,
+        bonusWholesaleCost: 1500,
+        partnerPct: 20,
+        products: [
+          {
+            title: 'Новогодний бокс из датской ели «Нобилис»',
+            desc: 'Живая хвоя со свечами и декором (не осыпается 30+ дней)',
+            tag: 'Хит декабря'
+          },
+          {
+            title: 'Облако из 9 кустовых роз в фирменной сумочке',
+            desc: 'Нежно-розовые пионовидные кустовые розы в аквабоксе',
+            tag: 'Стандарт'
+          },
+          {
+            title: 'Белоснежный монобукет из хризантем и эвкалипта',
+            desc: 'Стильный стойкий букет (стоит до 2 недель)',
+            tag: 'Минимализм'
+          },
+          {
+            title: 'Пастельная композиция в шляпной коробке',
+            desc: 'Во флористической губке — ваза не требуется',
+            tag: 'Для офиса'
+          }
+        ],
+        accentBg: 'from-rose-100 via-pink-50 to-emerald-50',
+        svg: `
+          <svg viewBox="0 0 120 100" class="w-full h-full">
+            <rect x="36" y="54" width="48" height="32" rx="6" fill="#065f46" stroke="#064e3b" stroke-width="2"/>
+            <path d="M36 66 L84 66" stroke="#fbbf24" stroke-width="3"/>
+            <circle cx="44" cy="40" r="12" fill="#fda4af" stroke="#e11d48" stroke-width="2"/>
+            <circle cx="60" cy="32" r="13" fill="#f43f5e" stroke="#be123c" stroke-width="2"/>
+            <circle cx="76" cy="40" r="12" fill="#fecdd3" stroke="#e11d48" stroke-width="2"/>
+            <path d="M28 50 L40 42 M92 50 L80 42" stroke="#16a34a" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="54" cy="48" r="5" fill="#fbbf24"/>
+            <circle cx="68" cy="48" r="5" fill="#f59e0b"/>
+          </svg>
+        `
+      }
+    ];
+
+    GIFTS.forEach(g => {
+      g.branches = g.branchCoords.map(b => `${b.name} — ${b.crossing}`);
+    });
+
+    const ALL_PARTNER_IDS = GIFTS.map(g => g.id);
+    const TOTAL_BRANCHES = GIFTS.reduce((sum, g) => sum + g.branchCoords.length, 0);
+
+    const STICKERS = [
+      { id: 'ny', label: '🎄 С Новым 2026 годом!' },
+      { id: 'bday', label: '🎂 С Днём Рождения!' },
+      { id: 'thanks', label: '💛 Спасибо за работу!' }
+    ];
+
+    const state = {
+      purchaseType: 'b2b',
+      step: 1,
+      selectedGiftId: 'bal',
+      selectedProductIdx: 0,
+      selectedBranchIdx: 0,
+      mapFilter: [...ALL_PARTNER_IDS],
+      mapFullscreen: false,
+      stickerId: 'ny',
+      companyName: 'Команда Kolesa / Kaspi',
+      recipientName: 'Аружан',
+      senderName: 'HR-отдел',
+      note: 'С наступающим 2026 годом! Выбирайте любой подарок из 5 любимых брендов Алматы — закажите доставку или заберите в одном из 23 филиалов с БЕСПЛАТНЫМ бонусом! 🎄✨',
+      paid: false,
+      kaspiProcessing: false,
+      unwrapped: false,
+      claimTab: 'pickup',
+      pickupTime: 'Сегодня после 17:30 (готов через 2 ч)',
+      surgeActive: false,
+      surgeChoice: 'offpeak',
+      recipientAddress: 'пр. Абая, 44, кв. 12 (Алматы)',
+      recipientComment: 'Позвонить по приезде, код *4580',
+      redemptionType: null,
+      orderStage: 0,
+      courierName: 'Арман Б. (Серебристый Cobalt • 5 мин)',
+      botLogs: []
+    };
+
+    let dgMainMap = null;
+    let dgMainReady = false;
+    let dgMainMarkers = [];
+
+    function getGift() {
+      return GIFTS.find(g => g.id === state.selectedGiftId) || GIFTS[0];
+    }
+
+    function getProduct() {
+      const gift = getGift();
+      return gift.products[state.selectedProductIdx] || gift.products[0];
+    }
+
+    function getSelectedBranchObj() {
+      const gift = getGift();
+      return gift.branchCoords[state.selectedBranchIdx] || gift.branchCoords[0];
+    }
+
+    function get2GisUrl(gift, branchObj) {
+      return `https://2gis.kz/almaty/search/${encodeURIComponent(gift.brand + ' ' + branchObj.name + ' Алматы')}`;
+    }
+
+    function getSticker() {
+      return STICKERS.find(s => s.id === state.stickerId) || STICKERS[0];
+    }
+
+    function formatKzt(num) {
+      return Math.round(num).toLocaleString('ru-RU') + ' ₸';
+    }
+
+    function nowTime() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // ---------- Живая карта 2GIS ----------
+    function buildDgPopupHtml(gift, br) {
+      const prod = getProduct();
+      return `
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#ffffff;color:#0f172a;font-size:12px;min-width:230px;line-height:1.45;">
+          <div style="font-weight:800;font-size:13px;color:${gift.pinColor};">${gift.emoji} ${gift.brand}</div>
+          <div style="font-weight:700;color:#0f172a;margin-top:2px;">📍 ${br.name} (${br.district} р-н)</div>
+          <div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:5px 7px;margin:5px 0;color:#0f172a;">
+            <b>🔀 Перекрёсток:</b> ${br.crossing}
+          </div>
+          <div style="color:#047857;font-weight:700;">🎁 Бонус: ${gift.bonusName}</div>
+          <div style="color:#334155;font-size:11px;margin-top:3px;">🕒 ${gift.hours} • Бокс: ${prod.title}</div>
+        </div>
+      `;
+    }
+
+    function renderMainDgMarkers(openSelectedPopup = true) {
+      if (!dgMainReady || !dgMainMap || typeof L === 'undefined') return;
+      const selectedEntry = dgMainMarkers.find(
+        m => m.giftId === state.selectedGiftId && m.idx === state.selectedBranchIdx
+      );
+      const wasOpen = selectedEntry ? selectedEntry.marker.isPopupOpen() : false;
+
+      dgMainMarkers.forEach(({ marker }) => {
+        try { dgMainMap.removeLayer(marker); } catch (e) {}
+      });
+      dgMainMarkers = [];
+
+      const z = dgMainMap.getZoom();
+
+      GIFTS.filter(g => state.mapFilter.includes(g.id)).forEach(gift => {
+        gift.branchCoords.forEach((br, idx) => {
+          const isSelected = gift.id === state.selectedGiftId && idx === state.selectedBranchIdx;
+          const compactMode = z <= 13 && !isSelected;
+          const pinClass = compactMode ? 'qutty-pin-compact' : 'qutty-pin';
+          const iconSize = compactMode ? [74, 24] : [116, 28];
+          const iconAnchor = compactMode ? [37, 12] : [58, 14];
+
+          const icon = L.divIcon({
+            className: 'qutty-dg-wrap',
+            html: `<div style="display:flex;justify-content:center;"><div class="${pinClass} ${isSelected ? 'qutty-pin-active' : ''}" style="background:${gift.pinColor}">${gift.emoji} ${gift.shortBrand}</div></div>`,
+            iconSize,
+            iconAnchor
+          });
+          const marker = L.marker([br.lat, br.lng], {
+            icon,
+            zIndexOffset: isSelected ? 1000 : 0
+          }).addTo(dgMainMap);
+
+          marker.bindPopup(buildDgPopupHtml(gift, br), {
+            maxWidth: 290,
+            autoPan: openSelectedPopup
+          });
+
+          marker.on('click', () => {
+            if (state.selectedGiftId !== gift.id) {
+              state.selectedGiftId = gift.id;
+              state.selectedProductIdx = 0;
+            }
+            state.selectedBranchIdx = idx;
+            renderHeaderAndInsights();
+            renderPhone();
+            renderMapPanelUi();
+            renderBotPanel();
+            renderScorecard();
+            renderMainDgMarkers(true);
+          });
+          dgMainMarkers.push({ giftId: gift.id, idx, marker, br });
+          if (isSelected && (openSelectedPopup || wasOpen)) {
+            marker.openPopup();
+          }
+        });
+      });
+    }
+
+    function fitMainDgMarkers() {
+      if (!dgMainReady || !dgMainMap) return;
+      const coords = [];
+      GIFTS.filter(g => state.mapFilter.includes(g.id)).forEach(g => {
+        g.branchCoords.forEach(br => coords.push([br.lat, br.lng]));
+      });
+      if (coords.length === 1) dgMainMap.setView(coords[0], 15);
+      else if (coords.length > 1) dgMainMap.fitBounds(coords, { padding: [35, 35], maxZoom: 15 });
+    }
+
+    function zoomMainDgBranch() {
+      if (!dgMainReady || !dgMainMap) return;
+      const br = getSelectedBranchObj();
+      dgMainMap.setView([br.lat, br.lng], 16);
+      const found = dgMainMarkers.find(m => m.giftId === state.selectedGiftId && m.idx === state.selectedBranchIdx);
+      if (found) setTimeout(() => { try { found.marker.openPopup(); } catch (e) {} }, 100);
+    }
+
+    // ---------- Управление фильтром и пинами ----------
+    function showAllMapPartners() {
+      state.mapFilter = [...ALL_PARTNER_IDS];
+      renderAll();
+      fitMainDgMarkers();
+    }
+
+    function toggleMapPartner(giftId) {
+      if (state.mapFilter.length === ALL_PARTNER_IDS.length) {
+        state.mapFilter = [giftId];
+        if (state.selectedGiftId !== giftId) {
+          state.selectedGiftId = giftId;
+          state.selectedProductIdx = 0;
+          state.selectedBranchIdx = 0;
+        }
+      } else if (state.mapFilter.includes(giftId)) {
+        const next = state.mapFilter.filter(id => id !== giftId);
+        if (next.length === 0) {
+          state.mapFilter = [...ALL_PARTNER_IDS];
+        } else {
+          state.mapFilter = next;
+          if (!state.mapFilter.includes(state.selectedGiftId)) {
+            state.selectedGiftId = state.mapFilter[0];
+            state.selectedProductIdx = 0;
+            state.selectedBranchIdx = 0;
+          }
+        }
+      } else {
+        state.mapFilter = [...state.mapFilter, giftId];
+        if (state.selectedGiftId !== giftId) {
+          state.selectedGiftId = giftId;
+          state.selectedProductIdx = 0;
+          state.selectedBranchIdx = 0;
+        }
+      }
+      renderAll();
+      fitMainDgMarkers();
+    }
+
+    function selectMapPin(giftId, branchIdx, shouldZoom = true) {
+      if (state.selectedGiftId !== giftId) {
+        state.selectedGiftId = giftId;
+        state.selectedProductIdx = 0;
+      }
+      state.selectedBranchIdx = branchIdx;
+      renderAll();
+      if (shouldZoom) zoomMainDgBranch();
+    }
+
+    function toggleMapFullscreen() {
+      state.mapFullscreen = !state.mapFullscreen;
+      const phoneCol = document.getElementById('phone-col');
+      const rightCol = document.getElementById('right-col');
+      const mapBox = document.getElementById('dg-main-map');
+      const dir = document.getElementById('map-crossing-directory');
+      if (phoneCol && rightCol && mapBox) {
+        if (state.mapFullscreen) {
+          phoneCol.classList.add('hidden');
+          rightCol.classList.remove('lg:col-span-7');
+          rightCol.classList.add('lg:col-span-12');
+          mapBox.classList.remove('h-[320px]');
+          mapBox.classList.add('h-[580px]');
+          if (dir) { dir.classList.remove('max-h-40'); dir.classList.add('max-h-72'); }
+        } else {
+          phoneCol.classList.remove('hidden');
+          rightCol.classList.remove('lg:col-span-12');
+          rightCol.classList.add('lg:col-span-7');
+          mapBox.classList.remove('h-[580px]');
+          mapBox.classList.add('h-[320px]');
+          if (dir) { dir.classList.remove('max-h-72'); dir.classList.add('max-h-40'); }
+        }
+        setTimeout(() => {
+          if (dgMainMap) dgMainMap.invalidateSize();
+        }, 60);
+      }
+      renderMapPanelUi();
+    }
+
+    function goPickupAtSelectedBranch() {
+      if (state.mapFullscreen) toggleMapFullscreen();
+      state.claimTab = 'pickup';
+      state.paid = true;
+      state.unwrapped = true;
+      if (state.botLogs.length === 0) pushInitialPaidLog();
+      state.step = 3;
+      renderAll();
+    }
+
+    function setPurchaseType(pt) {
+      state.purchaseType = pt;
+      if (pt === 'b2b') {
+        state.senderName = 'HR-отдел';
+        state.stickerId = 'ny';
+        state.note = 'С наступающим 2026 годом! Выбирайте любой подарок из 5 любимых брендов Алматы — закажите доставку или заберите в одном из 23 филиалов с БЕСПЛАТНЫМ бонусом! 🎄✨';
+      } else {
+        state.senderName = 'Данияр';
+        state.stickerId = 'bday';
+        state.note = 'Отправил тебе целый торт из BAL Bakery! Забери в любом из 7 филиалов с бесплатным кофе или закажи доставку домой 🎂💛';
+      }
+      renderAll();
+    }
+
+    function goToStep(step) {
+      state.step = step;
+      if (step >= 2 && !state.paid) {
+        state.paid = true;
+        pushInitialPaidLog();
+      }
+      if (step === 4 && state.orderStage === 0) {
+        state.redemptionType = state.claimTab === 'pickup' ? 'pickup' : 'delivery';
+        state.orderStage = 1;
+        pushClaimLog();
+      }
+      renderAll();
+    }
+
+    function resetDemo() {
+      if (state.mapFullscreen) toggleMapFullscreen();
+      state.step = 1;
+      state.paid = false;
+      state.kaspiProcessing = false;
+      state.unwrapped = false;
+      state.claimTab = 'pickup';
+      state.selectedProductIdx = 0;
+      state.selectedBranchIdx = 0;
+      state.mapFilter = [...ALL_PARTNER_IDS];
+      state.surgeActive = false;
+      state.surgeChoice = 'offpeak';
+      state.redemptionType = null;
+      state.orderStage = 0;
+      state.botLogs = [];
+      renderAll();
+      fitMainDgMarkers();
+    }
+
+    function selectGift(giftId) {
+      state.selectedGiftId = giftId;
+      state.selectedProductIdx = 0;
+      state.selectedBranchIdx = 0;
+      if (!state.mapFilter.includes(giftId)) {
+        state.mapFilter = [...state.mapFilter, giftId];
+      }
+      renderAll();
+    }
+
+    function selectProduct(idx) {
+      state.selectedProductIdx = idx;
+      renderAll();
+    }
+
+    function handleKaspiPay() {
+      if (state.kaspiProcessing) return;
+      state.kaspiProcessing = true;
+      renderPhone();
+      setTimeout(() => {
+        state.kaspiProcessing = false;
+        state.paid = true;
+        state.step = 2;
+        state.unwrapped = false;
+        pushInitialPaidLog();
+        renderAll();
+      }, 600);
+    }
+
+    function triggerUnwrap() {
+      const lid = document.getElementById('gift-lid');
+      if (lid) lid.classList.add('gift-lid-open');
+      spawnConfetti();
+      setTimeout(() => {
+        state.unwrapped = true;
+        renderPhone();
+        spawnConfetti();
+      }, 420);
+    }
+
+    function spawnConfetti() {
+      const vp = document.getElementById('phone-viewport');
+      if (!vp) return;
+      const colors = ['#facc15', '#f43f5e', '#38bdf8', '#10b981', '#a855f7', '#fb923c'];
+      for (let i = 0; i < 28; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = (12 + Math.random() * 76) + '%';
+        piece.style.top = (15 + Math.random() * 20) + '%';
+        piece.style.backgroundColor = colors[i % colors.length];
+        piece.style.animationDelay = (Math.random() * 0.25) + 's';
+        piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+        vp.appendChild(piece);
+        setTimeout(() => piece.remove(), 1600);
+      }
+    }
+
+    function submitPickupClaim() {
+      state.redemptionType = 'pickup';
+      state.orderStage = 1;
+      state.step = 4;
+      pushClaimLog();
+      renderAll();
+    }
+
+    function submitDeliveryClaim() {
+      state.redemptionType = 'delivery';
+      state.orderStage = 1;
+      state.step = 4;
+      pushClaimLog();
+      renderAll();
+    }
+
+    function simulateCashierScan() {
+      state.redemptionType = 'pickup';
+      state.orderStage = 4;
+      state.step = 4;
+      const gift = getGift();
+      const prod = getProduct();
+      const br = getSelectedBranchObj();
+      const payout = Math.round((gift.giftRetailValue + gift.bonusWholesaleCost) * (1 - gift.partnerPct / 100));
+      state.botLogs.push({
+        time: nowTime(),
+        sender: 'system',
+        title: '📷 QR-код отсканирован, подарок + бонус выданы!',
+        body: `Код <b>8809-4421-9012</b> подтверждён в <b>${gift.brand} (${br.name}, ${br.crossing})</b>.<br/>Набор: <b>${prod.title}</b> + бонус (${gift.bonusName}).<br/>Выплата партнёру: <b>${formatKzt(payout)}</b> (перевод в 21:00).`
+      });
+      renderAll();
+    }
+
+    function botAcceptPrep() {
+      if (state.orderStage >= 2) return;
+      state.orderStage = 2;
+      const gift = getGift();
+      const prod = getProduct();
+      state.botLogs.push({
+        time: nowTime(),
+        sender: 'merchant',
+        title: '✅ Заказ принят в работу',
+        body: `Собираем <b>${prod.title}</b>${state.redemptionType === 'pickup' ? ` + <b>${gift.bonusName}</b> к ${state.pickupTime}` : ''}.`
+      });
+      renderAll();
+    }
+
+    function botDispatchCourier() {
+      if (state.orderStage < 2) state.orderStage = 2;
+      state.orderStage = 3;
+      const gift = getGift();
+      const br = getSelectedBranchObj();
+      if (state.redemptionType === 'pickup') {
+        state.botLogs.push({
+          time: nowTime(),
+          sender: 'merchant',
+          title: '🛍️ Подарок готов к выдаче!',
+          body: `${state.recipientName} получила уведомление в WhatsApp: «Ваш бокс от ${gift.brand} и бесплатный бонус ждут вас: ${br.name} (${br.crossing})!»`
+        });
+      } else {
+        const yandexQuote = state.surgeActive
+          ? (state.surgeChoice === 'offpeak' ? 1900 : 3800)
+          : 2100;
+        state.botLogs.push({
+          time: nowTime(),
+          sender: 'system',
+          title: '🛵 Курьер Яндекс (Авто) вызван через API',
+          body: `Водитель <b>${state.courierName}</b> назначен автоматически.<br/>Тариф Яндекса: <b>${formatKzt(yandexQuote)}</b>.`
+        });
+      }
+      renderAll();
+    }
+
+    function botMarkDelivered() {
+      state.orderStage = 4;
+      const gift = getGift();
+      const payout = state.redemptionType === 'pickup'
+        ? Math.round((gift.giftRetailValue + gift.bonusWholesaleCost) * (1 - gift.partnerPct / 100))
+        : Math.round(gift.giftRetailValue * (1 - gift.partnerPct / 100));
+      state.botLogs.push({
+        time: nowTime(),
+        sender: 'system',
+        title: state.redemptionType === 'pickup' ? '📷 Клиент забрал подарок и получил бонус' : '🎉 Доставлено получателю!',
+        body: `Заказ завершён! В реестр выплат для <b>${gift.brand}</b> зачислено <b>${formatKzt(payout)}</b>.`
+      });
+      renderAll();
+    }
+
+    function pushInitialPaidLog() {
+      const gift = getGift();
+      const prod = getProduct();
+      state.botLogs = [
+        {
+          time: nowTime(),
+          sender: 'system',
+          title: state.purchaseType === 'b2b'
+            ? `🏢 Корпоративный пакет оплачен (${state.companyName})`
+            : `💳 Подарок оплачен (15 000 ₸ в эскроу до выбора)`,
+          body: state.purchaseType === 'b2b'
+            ? `HR оплатила <b>35 ссылок × 15 000 ₸ = 525 000 ₸</b>.<br/>⏳ Средства удерживаются до тех пор, пока сотрудник не выберет партнёра, бокс и точку на карте 2GIS.`
+            : `<b>${state.senderName}</b> оплатил <b>15 000 ₸</b> через Kaspi для <b>${gift.brand}</b> (${prod.title}).`
+        }
+      ];
+    }
+
+    function pushClaimLog() {
+      const gift = getGift();
+      const prod = getProduct();
+      const isPickup = state.redemptionType === 'pickup';
+      const br = getSelectedBranchObj();
+      const payout = isPickup
+        ? Math.round((gift.giftRetailValue + gift.bonusWholesaleCost) * (1 - gift.partnerPct / 100))
+        : Math.round(gift.giftRetailValue * (1 - gift.partnerPct / 100));
+
+      state.botLogs.push({
+        time: nowTime(),
+        sender: 'system',
+        title: isPickup
+          ? `🔔 НОВЫЙ САМОВЫВОЗ + БОНУС (${gift.brand})`
+          : `🔔 НОВАЯ ДОСТАВКА КУРЬЕРОМ (${gift.brand})`,
+        body: isPickup
+          ? `<b>Выбранный бокс:</b> ${prod.title}<br/><b>Филиал:</b> ${br.name} (${br.crossing})<br/><b>Добавить бонус:</b> 🎁 ${gift.bonusName}<br/><b>Ваша выплата:</b> <span class="text-emerald-500 font-bold">${formatKzt(payout)}</span> (+1 200 ₸!)`
+          : `<b>Выбранный бокс:</b> ${prod.title}<br/><b>Адрес:</b> ${state.recipientAddress}<br/><b>Ваша выплата:</b> <b>${formatKzt(payout)}</b>`
+      });
+    }
+
+    // ---------- UI карты 2GIS (не перезаписывает контейнер #dg-main-map) ----------
+    function renderMapPanelUi() {
+      const activePartners = GIFTS.filter(g => state.mapFilter.includes(g.id));
+      const visibleCount = activePartners.reduce((s, g) => s + g.branchCoords.length, 0);
+      const isAllActive = state.mapFilter.length === ALL_PARTNER_IDS.length;
+      const gift = getGift();
+      const br = getSelectedBranchObj();
+      const twoGisHref = get2GisUrl(gift, br);
+
+      const fsLabel = state.mapFullscreen ? '⛌ Вернуть телефон и питч' : '⛶ Развернуть 2GIS на весь экран';
+      const overlayFsBtn = document.getElementById('btn-map-overlay-fs');
+      if (overlayFsBtn) overlayFsBtn.textContent = fsLabel;
+
+      document.getElementById('map-header-controls').innerHTML = `
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div>
+            <h2 class="text-sm font-bold flex items-center gap-2">
+              <span>🗺️ Живая карта 2GIS Алматы (перекрёстки)</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-500">
+                ${visibleCount} из ${TOTAL_BRANCHES}
+              </span>
+            </h2>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              Нажмите на бренд (например, BAL), чтобы показать только его филиалы, или выберите любую точку из списка перекрёстков ниже.
+            </p>
+          </div>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <button
+              onclick="toggleMapFullscreen()"
+              class="px-2.5 py-1 rounded-lg border border-emerald-500/40 bg-emerald-500/15 text-emerald-500 text-xs font-bold hover:opacity-85 cursor-pointer"
+            >
+              ${fsLabel}
+            </button>
+            <a href="2gis_almaty_map.html" class="px-2.5 py-1 rounded-lg border border-[var(--border)] text-xs font-bold hover:opacity-80">
+              Отдельное окно ↗
+            </a>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button
+            onclick="showAllMapPartners()"
+            class="px-2.5 py-1 rounded-full border text-xs font-bold transition cursor-pointer ${
+              isAllActive
+                ? 'bg-slate-900 text-white border-slate-900'
+                : 'border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)]'
+            }"
+          >
+            🗺️ Все 5 (${TOTAL_BRANCHES})
+          </button>
+          ${GIFTS.map(p => {
+            const active = state.mapFilter.includes(p.id);
+            const solo = state.mapFilter.length === 1 && state.mapFilter[0] === p.id;
+            return `
+              <button
+                onclick="toggleMapPartner('${p.id}')"
+                class="inline-flex items-center gap-1 px-2 py-1 rounded-full border text-xs font-semibold transition cursor-pointer ${
+                  solo
+                    ? 'font-bold shadow-xs'
+                    : active
+                      ? 'bg-[var(--background)] border-[var(--border)] text-[var(--foreground)]'
+                      : 'bg-transparent border-[var(--border)] text-[var(--muted-foreground)] opacity-50'
+                }"
+                style="${solo ? `background-color: ${p.pinColor}28; border-color: ${p.pinColor};` : ''}"
+              >
+                <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${p.pinColor}"></span>
+                <span>${p.emoji} ${p.shortBrand} (${p.branchCoords.length})</span>
+                <span class="text-[10px]">${active ? '✓' : ''}</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      document.getElementById('map-selected-card').innerHTML = `
+        <div class="rounded-xl border border-[var(--border)] bg-[var(--background)] p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+          <div class="min-w-0 space-y-0.5">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${gift.pinColor}"></span>
+              <span class="font-bold text-[var(--foreground)]">${gift.emoji} ${gift.brand}</span>
+              <span class="text-[11px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-semibold">${br.district} р-н</span>
+              <a href="${twoGisHref}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-emerald-500 underline">
+                2GIS.kz ↗
+              </a>
+            </div>
+            <div class="font-semibold text-[var(--foreground)]">📍 ${br.name} • 🔀 <b>Перекрёсток:</b> ${br.crossing}</div>
+            <div class="text-[11px] text-emerald-500 font-semibold">🕒 ${gift.hours} • Бонус: ${gift.bonusName}</div>
+          </div>
+          <button
+            onclick="goPickupAtSelectedBranch()"
+            class="px-3 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition shrink-0 cursor-pointer"
+          >
+            🏪 Выбрать точку →
+          </button>
+        </div>
+      `;
+
+      const dirRows = [];
+      activePartners.forEach(p => {
+        p.branchCoords.forEach((b, idx) => {
+          const sel = p.id === state.selectedGiftId && idx === state.selectedBranchIdx;
+          dirRows.push(`
+            <button
+              onclick="selectMapPin('${p.id}', ${idx}, true)"
+              class="text-left p-2 rounded-xl border text-[11px] transition cursor-pointer ${
+                sel
+                  ? 'border-amber-400 bg-amber-400/10'
+                  : 'border-[var(--border)] bg-[var(--background)] hover:opacity-85'
+              }"
+            >
+              <div class="font-bold text-[var(--foreground)] truncate">${p.emoji} ${p.shortBrand} — ${b.name}</div>
+              <div class="text-[var(--muted-foreground)] truncate">🔀 ${b.crossing}</div>
+            </button>
+          `);
+        });
+      });
+      document.getElementById('map-crossing-directory').innerHTML = dirRows.join('');
+    }
+
+    // ---------- Рендеринг ----------
+    function renderAll() {
+      renderHeaderAndInsights();
+      renderPhone();
+      renderMapPanelUi();
+      renderMainDgMarkers();
+      renderBotPanel();
+      renderScorecard();
+    }
+
+    function renderHeaderAndInsights() {
+      const banner = document.getElementById('pitch-banner');
+      const step3Title = document.getElementById('nav-step-3-title');
+      const step3Sub = document.getElementById('nav-step-3-sub');
+
+      banner.className = 'rounded-xl p-3 border text-xs flex flex-col md:flex-row md:items-center md:justify-between gap-2 bg-emerald-500/10 border-emerald-500/30';
+      banner.innerHTML = `
+        <div class="flex items-start gap-2">
+          <span class="text-base leading-none">✨</span>
+          <div>
+            <span class="font-bold text-emerald-500">Питч-режим + 2GIS (15 000 ₸):</span>
+            <span class="text-[var(--foreground)]">На живой карте <b>2GIS</b> сразу видны все <b>23 филиала</b> 5 партнёров с точными перекрёстками. Получатель выбирает бокс и ближайший филиал с бесплатным бонусом или курьера.</span>
+          </div>
+        </div>
+        <span class="shrink-0 font-semibold px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-500">
+          0 ₸ наценки клиенту
+        </span>
+      `;
+      step3Title.textContent = '3. Самовывоз+Бонус / Курьер';
+      step3Sub.textContent = '23 точки в 2GIS и QR-бонус';
+
+      for (let i = 1; i <= 4; i++) {
+        const pill = document.getElementById(`nav-step-${i}`);
+        if (i === state.step) {
+          pill.className = 'step-pill text-left px-3 py-2 rounded-xl border text-xs transition cursor-pointer bg-amber-400/15 border-amber-400 text-[var(--foreground)] shadow-sm';
+        } else if (i < state.step) {
+          pill.className = 'step-pill text-left px-3 py-2 rounded-xl border text-xs transition cursor-pointer bg-[var(--background)] border-emerald-500/40 text-[var(--foreground)]';
+        } else {
+          pill.className = 'step-pill text-left px-3 py-2 rounded-xl border text-xs transition cursor-pointer bg-[var(--background)] border-[var(--border)] text-[var(--muted-foreground)] hover:border-amber-400/50';
+        }
+      }
+    }
+
+    function renderPhone() {
+      const vp = document.getElementById('phone-viewport');
+      if (state.step === 1) vp.innerHTML = renderStep1();
+      else if (state.step === 2) vp.innerHTML = renderStep2();
+      else if (state.step === 3) vp.innerHTML = renderStep3();
+      else vp.innerHTML = renderStep4();
+    }
+
+    function renderProductCardsHtml(gift) {
+      return gift.products.map((prod, idx) => {
+        const active = idx === state.selectedProductIdx;
+        return `
+          <button
+            onclick="selectProduct(${idx})"
+            class="w-full text-left p-2.5 rounded-xl border transition-all cursor-pointer flex items-start justify-between gap-2 ${
+              active
+                ? 'bg-amber-50 border-amber-400 ring-2 ring-amber-300/60 shadow-xs'
+                : 'bg-white border-slate-200 hover:border-slate-300'
+            }"
+          >
+            <div class="space-y-0.5 min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-xs font-extrabold text-slate-900 leading-snug">${prod.title}</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">${prod.tag}</span>
+              </div>
+              <div class="text-[11px] text-slate-600 leading-snug">${prod.desc}</div>
+            </div>
+            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5 ${
+              active ? 'bg-amber-400 text-slate-950' : 'bg-slate-100 text-slate-400'
+            }">${active ? '✓' : ''}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderStep1() {
+      const gift = getGift();
+
+      const partnerPills = GIFTS.map(item => {
+        const active = item.id === state.selectedGiftId;
+        return `
+          <button
+            onclick="selectGift('${item.id}')"
+            class="text-left p-2.5 rounded-2xl border transition-all cursor-pointer flex items-center gap-2.5 ${
+              active
+                ? 'bg-amber-50 border-amber-400 ring-2 ring-amber-300/60 shadow-sm'
+                : 'bg-white border-slate-200 hover:border-slate-300'
+            }"
+          >
+            <div class="w-11 h-10 rounded-xl bg-gradient-to-br ${item.accentBg} p-1 shrink-0">${item.svg}</div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase truncate">${item.category}</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 shrink-0">${item.branchCoords.length} тчк</span>
+              </div>
+              <div class="text-xs font-extrabold text-slate-900 truncate">${item.brand}</div>
+              <div class="text-[10px] text-slate-500 truncate">${item.products.length} готовых бокса • ${item.hours}</div>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      const checkoutBlock = `
+        <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
+          <div class="flex items-center justify-between text-xs font-bold text-emerald-900">
+            <span>${state.purchaseType === 'b2b' ? '🏢 Корпоративная ссылка (выбор 1 из 5)' : '✨ Подарок без адреса'}</span>
+            <span class="px-2 py-0.5 rounded-full bg-white text-emerald-700 text-[10px]">0 ₸ наценка</span>
+          </div>
+          <p class="text-[11px] text-emerald-800 leading-relaxed">
+            ${state.purchaseType === 'b2b'
+              ? 'Сотрудник открывает ссылку, видит 23 точки на карте 2GIS и сам выбирает бренд, бокс и самовывоз или доставку.'
+              : `Отправьте выбранный бокс от <b>${gift.brand}</b>, не спрашивая адрес у ${state.recipientName}!`}
+          </p>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] font-semibold text-slate-600 block mb-0.5">${state.purchaseType === 'b2b' ? 'Компания / HR' : 'От кого'}</label>
+              <input type="text" value="${escapeHtml(state.senderName)}" oninput="state.senderName=this.value" class="w-full px-2.5 py-1.5 rounded-lg border border-emerald-200 bg-white text-xs font-medium text-slate-900" />
+            </div>
+            <div>
+              <label class="text-[10px] font-semibold text-slate-600 block mb-0.5">Получатель</label>
+              <input type="text" value="${escapeHtml(state.recipientName)}" oninput="state.recipientName=this.value" class="w-full px-2.5 py-1.5 rounded-lg border border-emerald-200 bg-white text-xs font-medium text-slate-900" />
+            </div>
+          </div>
+        </div>
+      `;
+
+      return `
+        <div class="sticky top-0 z-10 bg-amber-300 px-4 py-3 flex items-center justify-between border-b border-amber-400/50">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🎁</span>
+            <div>
+              <div class="text-sm font-extrabold text-slate-950 leading-none">Qutty Gift • Алматы</div>
+              <div class="text-[10px] font-semibold text-slate-800">5 сетей • ${TOTAL_BRANCHES} точки в 2GIS</div>
+            </div>
+          </div>
+          <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-white/85 text-slate-900">
+            15 000 ₸
+          </span>
+        </div>
+
+        <div class="p-4 space-y-3.5">
+          <div class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-slate-200/80 text-[11px] font-bold">
+            <button
+              onclick="setPurchaseType('b2b')"
+              class="py-1.5 px-2 rounded-lg transition cursor-pointer ${state.purchaseType === 'b2b' ? 'bg-white text-slate-950 shadow-xs' : 'text-slate-600'}"
+            >🏢 B2B для HR (5 брендов)</button>
+            <button
+              onclick="setPurchaseType('single')"
+              class="py-1.5 px-2 rounded-lg transition cursor-pointer ${state.purchaseType === 'single' ? 'bg-white text-slate-950 shadow-xs' : 'text-slate-600'}"
+            >💛 Питч 1 бренда (BAL)</button>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-extrabold text-slate-900 uppercase tracking-wide">1. Выберите партнёра</h2>
+            <span class="text-[11px] font-semibold text-emerald-700">12.5k бокс + 2.5k пул</span>
+          </div>
+
+          <div class="space-y-1.5">
+            ${partnerPills}
+          </div>
+
+          <div class="space-y-2 pt-1">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xs font-extrabold text-slate-900 uppercase tracking-wide">2. Выберите бокс — ${gift.brand}</h2>
+            </div>
+            <div class="space-y-1.5">
+              ${renderProductCardsHtml(gift)}
+            </div>
+            <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-800">
+              🏪 Бонус при самовывозе: ${gift.bonusName}
+            </div>
+          </div>
+
+          ${checkoutBlock}
+
+          <button
+            onclick="handleKaspiPay()"
+            class="w-full py-3.5 px-4 rounded-2xl font-extrabold text-sm text-white bg-red-600 hover:bg-red-700 active:scale-[0.99] transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+          >
+            ${state.kaspiProcessing
+              ? '<span class="animate-pulse">⏳ Формируем ссылку-подарок...</span>'
+              : `<span>${state.purchaseType === 'b2b' ? 'Создать корпоративную ссылку (15 000 ₸)' : 'Оплатить 15 000 ₸ через Kaspi Pay'}</span>`
+            }
+          </button>
+        </div>
+      `;
+    }
+
+    function renderStep2() {
+      const gift = getGift();
+      const prod = getProduct();
+      const sticker = getSticker();
+
+      if (!state.unwrapped) {
+        return `
+          <div class="sticky top-0 z-10 bg-emerald-800 text-white px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-amber-300 text-slate-900 font-bold text-xs flex items-center justify-center">Q</div>
+              <div>
+                <div class="text-xs font-bold">${escapeHtml(state.senderName)} (WhatsApp)</div>
+                <div class="text-[10px] text-emerald-200">Экран получателя • Без ценников</div>
+              </div>
+            </div>
+            <span class="text-[10px] bg-white/15 px-2 py-0.5 rounded-full">Алматы</span>
+          </div>
+
+          <div class="flex-1 p-4 flex flex-col justify-between bg-stone-200/70 space-y-4">
+            <div class="space-y-3">
+              <div class="mx-auto w-fit px-3 py-0.5 rounded-full bg-white/80 text-[10px] font-semibold text-slate-600 shadow-xs">
+                Сегодня
+              </div>
+
+              <div class="max-w-[88%] bg-white rounded-2xl rounded-tl-xs p-3 shadow-sm border border-slate-200/80 space-y-1">
+                <p class="text-xs text-slate-800">Привет, ${escapeHtml(state.recipientName)}! 🎄 Тебе праздничный подарок от <b>${escapeHtml(state.senderName)}</b> — открой, когда будет удобно!</p>
+                <div class="text-[10px] text-slate-400 text-right">02:20 ✓✓</div>
+              </div>
+
+              <div class="max-w-[92%] bg-gradient-to-b from-amber-300 to-amber-200 rounded-2xl rounded-tl-xs p-3.5 shadow-md border border-amber-400/60 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-extrabold text-slate-900">🎁 Открытка Qutty Gift</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/85 text-slate-900">
+                    23 точки в 2GIS
+                  </span>
+                </div>
+
+                <div id="gift-box-container" class="py-3 flex flex-col items-center justify-center relative">
+                  <div class="gift-shake cursor-pointer" onclick="triggerUnwrap()">
+                    <svg viewBox="0 0 120 110" class="w-28 h-24 drop-shadow-md">
+                      <rect x="24" y="46" width="72" height="52" rx="8" fill="#ffffff" stroke="#e11d48" stroke-width="3"/>
+                      <rect x="54" y="46" width="12" height="52" fill="#f43f5e"/>
+                      <g id="gift-lid">
+                        <rect x="18" y="30" width="84" height="18" rx="6" fill="#fff1f2" stroke="#e11d48" stroke-width="3"/>
+                        <rect x="54" y="30" width="12" height="18" fill="#f43f5e"/>
+                        <path d="M60 30 C44 12, 30 22, 46 30 Z" fill="#fb7185" stroke="#e11d48" stroke-width="2.5"/>
+                        <path d="M60 30 C76 12, 90 22, 74 30 Z" fill="#fb7185" stroke="#e11d48" stroke-width="2.5"/>
+                        <circle cx="60" cy="30" r="5" fill="#e11d48"/>
+                      </g>
+                    </svg>
+                  </div>
+                  <div class="text-[11px] font-bold text-slate-800 mt-1">
+                    От: ${escapeHtml(state.senderName)} • Для: ${escapeHtml(state.recipientName)}
+                  </div>
+                </div>
+
+                <button
+                  onclick="triggerUnwrap()"
+                  class="w-full py-3 px-4 rounded-xl bg-slate-950 text-white font-extrabold text-xs hover:bg-slate-800 active:scale-[0.98] transition shadow cursor-pointer"
+                >
+                  🎁 Нажмите, чтобы распаковать подарок
+                </button>
+              </div>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-white/85 border border-slate-200 text-[11px] text-slate-600 text-center">
+              Никаких ценников на экране — выглядит как живой подарок, а не сухой сертификат.
+            </div>
+          </div>
+        `;
+      }
+
+      const isB2BChoice = state.purchaseType === 'b2b';
+      const partnerChoicesHtml = isB2BChoice ? `
+        <div class="space-y-1.5">
+          <div class="text-xs font-extrabold text-slate-900">1. Выберите бренд (всё уже оплачено):</div>
+          <div class="flex gap-1.5 overflow-x-auto pb-1">
+            ${GIFTS.map(item => {
+              const active = item.id === state.selectedGiftId;
+              return `
+                <button
+                  onclick="selectGift('${item.id}')"
+                  class="px-2.5 py-2 rounded-xl border text-left shrink-0 transition cursor-pointer ${
+                    active ? 'bg-amber-100 border-amber-400 text-slate-950 font-extrabold' : 'bg-white border-slate-200 text-slate-700 font-semibold'
+                  }"
+                >
+                  <div class="text-[10px] text-slate-500">${item.category}</div>
+                  <div class="text-xs">${item.emoji} ${item.brand}</div>
+                </button>
+              `;
+            }).join('')}
+          </div>
+          <div class="text-xs font-extrabold text-slate-900 pt-1">2. Выберите конкретный бокс в ${gift.brand}:</div>
+          <div class="space-y-1.5">
+            ${renderProductCardsHtml(gift)}
+          </div>
+        </div>
+      ` : `
+        <div class="space-y-2">
+          <div>
+            <div class="text-[11px] font-bold text-rose-600 uppercase">${gift.brand}</div>
+            <div class="text-sm font-extrabold text-slate-900">${prod.title}</div>
+            <div class="text-xs text-slate-600 mt-0.5">${prod.desc}</div>
+          </div>
+          <div class="space-y-1.5">
+            <div class="text-[11px] font-bold text-slate-500">Можно поменять вкус / бокс внутри ${gift.brand}:</div>
+            ${renderProductCardsHtml(gift)}
+          </div>
+        </div>
+      `;
+
+      return `
+        <div class="sticky top-0 z-10 bg-amber-300 px-4 py-3 flex items-center justify-between border-b border-amber-400/50">
+          <button onclick="state.unwrapped=false; renderPhone();" class="text-xs font-bold text-slate-900 cursor-pointer">← Чат</button>
+          <span class="text-xs font-extrabold text-slate-950">Подарок распакован!</span>
+          <span class="text-xs">✨</span>
+        </div>
+
+        <div class="p-4 space-y-3.5 pop-reveal">
+          <div class="flex items-center justify-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 text-[11px] font-bold">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-live"></span>
+              <span>Можно забрать сейчас • ${gift.branchCount}</span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-3xl border border-slate-200 shadow-md overflow-hidden">
+            <div class="h-24 bg-gradient-to-br ${gift.accentBg} p-2.5 flex items-center justify-center relative">
+              <div class="w-24 h-20">${gift.svg}</div>
+              <span class="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full bg-white/90 text-[11px] font-bold text-slate-900 shadow-xs">
+                ${sticker.label}
+              </span>
+              <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-slate-900/85 text-[10px] font-bold text-white">
+                Оплачено
+              </span>
+            </div>
+            <div class="p-3.5 space-y-3">
+              <div class="p-2.5 rounded-2xl bg-amber-50 border border-amber-200 space-y-1">
+                <div class="text-[11px] font-bold text-amber-800">Пожелание от «${escapeHtml(state.senderName)}»:</div>
+                <p class="text-xs text-slate-800 italic leading-relaxed">«${escapeHtml(state.note)}»</p>
+              </div>
+
+              ${partnerChoicesHtml}
+
+              <button
+                onclick="goToStep(3)"
+                class="w-full py-3 px-4 rounded-2xl bg-slate-950 text-white font-extrabold text-sm hover:bg-slate-800 active:scale-[0.99] transition shadow-md cursor-pointer"
+              >
+                Выбрать точку в 2GIS или курьера →
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStep3() {
+      const gift = getGift();
+      const prod = getProduct();
+      const br = getSelectedBranchObj();
+
+      const tabToggle = `
+        <div class="grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-slate-200/80">
+          <button
+            onclick="state.claimTab='pickup'; renderAll();"
+            class="py-2 px-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+              state.claimTab === 'pickup' ? 'bg-white text-slate-950 shadow-xs' : 'text-slate-600'
+            }"
+          >
+            🏪 Самовывоз + Бонус
+          </button>
+          <button
+            onclick="state.claimTab='delivery'; renderAll();"
+            class="py-2 px-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+              state.claimTab === 'delivery' ? 'bg-white text-slate-950 shadow-xs' : 'text-slate-600'
+            }"
+          >
+            🛵 Курьер Яндекс
+          </button>
+        </div>
+      `;
+
+      if (state.claimTab === 'pickup') {
+        return `
+          <div class="sticky top-0 z-10 bg-amber-300 px-4 py-3 flex items-center justify-between border-b border-amber-400/50">
+            <button onclick="goToStep(2)" class="text-xs font-bold text-slate-900 cursor-pointer">← Выбор</button>
+            <span class="text-xs font-extrabold text-slate-950">${gift.brand}</span>
+            <span class="text-[11px] font-bold text-emerald-900">🟢 ${gift.hours}</span>
+          </div>
+
+          <div class="p-4 space-y-3">
+            ${tabToggle}
+
+            <div class="p-3 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-300 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-extrabold text-emerald-900">🎁 Бонус за самовывоз</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white">БЕСПЛАТНО</span>
+              </div>
+              <div class="text-xs font-bold text-emerald-800">${gift.bonusName}</div>
+            </div>
+
+            <div class="p-3 rounded-2xl bg-white border border-slate-200 space-y-1.5">
+              <div class="text-xs font-extrabold text-slate-900">1. Выбранный набор (${gift.brand})</div>
+              ${renderProductCardsHtml(gift)}
+            </div>
+
+            <div class="p-3 rounded-2xl bg-white border border-slate-200 space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="text-xs font-extrabold text-slate-900">2. Точный филиал и перекрёсток</div>
+                <button onclick="zoomMainDgBranch()" class="text-[11px] font-bold text-emerald-700 underline cursor-pointer">
+                  Показать в 2GIS →
+                </button>
+              </div>
+              <select onchange="state.selectedBranchIdx=Number(this.value); renderAll(); zoomMainDgBranch();" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs font-semibold text-slate-900">
+                ${gift.branchCoords.map((item, idx) => `
+                  <option value="${idx}" ${idx === state.selectedBranchIdx ? 'selected' : ''}>${item.name} (${item.crossing})</option>
+                `).join('')}
+              </select>
+              <div class="text-[11px] text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200">
+                🔀 <b>Перекрёсток:</b> ${br.crossing}
+              </div>
+              <select onchange="state.pickupTime=this.value" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs text-slate-800">
+                <option ${state.pickupTime==='Сегодня после 17:30 (готов через 2 ч)'?'selected':''}>Сегодня после 17:30 (готов через 2 ч)</option>
+                <option ${state.pickupTime==='Завтра, 12:00–14:00'?'selected':''}>Завтра, 12:00–14:00</option>
+                <option ${state.pickupTime==='26 декабря, 18:00–20:00'?'selected':''}>26 декабря, 18:00–20:00</option>
+              </select>
+            </div>
+
+            <button
+              onclick="submitPickupClaim()"
+              class="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 text-white font-extrabold text-xs hover:bg-emerald-700 active:scale-[0.99] transition shadow-md cursor-pointer"
+            >
+              🏪 Подтвердить самовывоз и открыть QR-код
+            </button>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="sticky top-0 z-10 bg-amber-300 px-4 py-3 flex items-center justify-between border-b border-amber-400/50">
+          <button onclick="goToStep(2)" class="text-xs font-bold text-slate-900 cursor-pointer">← Выбор</button>
+          <span class="text-xs font-extrabold text-slate-950">Доставка по Алматы</span>
+          <span class="text-[11px] font-bold text-slate-800">Яндекс API</span>
+        </div>
+
+        <div class="p-4 space-y-3">
+          ${tabToggle}
+
+          <div class="p-3 rounded-2xl bg-white border border-slate-200 space-y-1.5">
+            <div class="text-xs font-extrabold text-slate-900">1. Выбранный набор (${gift.brand})</div>
+            ${renderProductCardsHtml(gift)}
+          </div>
+
+          <div class="p-3 rounded-2xl bg-white border border-slate-200 space-y-2">
+            <div class="text-xs font-extrabold text-slate-900">2. Куда доставить в Алматы?</div>
+            <input
+              type="text"
+              value="${escapeHtml(state.recipientAddress)}"
+              oninput="state.recipientAddress=this.value"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs font-medium text-slate-900"
+            />
+          </div>
+
+          <div class="p-3 rounded-2xl border space-y-2 ${state.surgeActive ? 'bg-rose-50 border-rose-300' : 'bg-emerald-50 border-emerald-200'}">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-extrabold ${state.surgeActive ? 'text-rose-900' : 'text-emerald-900'}">
+                ${state.surgeActive ? '❄️ Пик 18:00 / снег: Яндекс 3 800 ₸' : '✅ Обычный трафик: Яндекс 2 100 ₸'}
+              </span>
+              <button
+                onclick="state.surgeActive=!state.surgeActive; renderAll();"
+                class="px-2 py-1 rounded-lg bg-white border border-slate-300 text-[10px] font-bold text-slate-800 cursor-pointer shrink-0"
+              >
+                ${state.surgeActive ? 'Убрать пик' : 'Тест часа пик 18:00'}
+              </button>
+            </div>
+
+            ${state.surgeActive ? `
+              <div class="space-y-1.5 pt-1">
+                <button
+                  onclick="state.surgeChoice='offpeak'; renderAll();"
+                  class="w-full text-left p-2 rounded-xl border text-xs font-semibold cursor-pointer ${state.surgeChoice==='offpeak' ? 'bg-white border-emerald-500 ring-1 ring-emerald-400 text-slate-900' : 'bg-white/60 border-rose-200 text-slate-700'}"
+                >
+                  🕒 Спокойное окно (сегодня 20:30 или завтра 12:00) — <b>0 ₸ доплаты</b>
+                </button>
+                <button
+                  onclick="state.surgeChoice='rush'; renderAll();"
+                  class="w-full text-left p-2 rounded-xl border text-xs font-semibold cursor-pointer ${state.surgeChoice==='rush' ? 'bg-white border-rose-500 ring-1 ring-rose-400 text-slate-900' : 'bg-white/60 border-rose-200 text-slate-700'}"
+                >
+                  ⚡ Срочно прямо сейчас — <b>доплата +1 300 ₸ через Kaspi</b>
+                </button>
+              </div>
+            ` : `
+              <div class="text-[11px] text-emerald-800">
+                Доставка полностью покрыта подарочным пулом 2 500 ₸ — для вас 0 ₸!
+              </div>
+            `}
+          </div>
+
+          <button
+            onclick="submitDeliveryClaim()"
+            class="w-full py-3.5 px-4 rounded-2xl bg-slate-950 text-white font-extrabold text-xs hover:bg-slate-800 transition shadow-md cursor-pointer"
+          >
+            ${state.surgeActive && state.surgeChoice === 'rush'
+              ? '⚡ Доплатить 1 300 ₸ и вызвать курьера'
+              : '🛵 Подтвердить доставку (0 ₸ доплаты)'}
+          </button>
+        </div>
+      `;
+    }
+
+    function renderStep4() {
+      const gift = getGift();
+      const prod = getProduct();
+      const br = getSelectedBranchObj();
+
+      if (state.redemptionType === 'pickup') {
+        const scanned = state.orderStage === 4;
+        return `
+          <div class="sticky top-0 z-10 ${scanned ? 'bg-emerald-600 text-white' : 'bg-amber-300 text-slate-950'} px-4 py-3 flex items-center justify-between">
+            <button onclick="goToStep(3)" class="text-xs font-bold cursor-pointer">← Назад</button>
+            <span class="text-xs font-extrabold">${scanned ? 'Выдано с бонусом!' : 'QR-код на кассу'}</span>
+            <span class="text-xs">${scanned ? '✓' : '🏪'}</span>
+          </div>
+
+          <div class="p-4 space-y-3.5">
+            ${scanned ? `
+              <div class="p-4 rounded-3xl bg-white border border-emerald-200 text-center space-y-3 shadow-sm">
+                <div class="w-14 h-14 mx-auto rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl">🎉</div>
+                <div class="text-base font-extrabold text-slate-900">Приятного праздника!</div>
+                <p class="text-xs text-slate-600">
+                  Вы получили <b>${prod.title}</b> в филиале <b>${br.name}</b> (${br.crossing}) + ваш бонус: <b>${gift.bonusName}</b>.
+                </p>
+                <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-left space-y-1">
+                  <div class="text-xs font-extrabold text-amber-900">🎁 Понравилось распаковывать?</div>
+                  <div class="text-[11px] text-amber-800">Отправьте торт или кофе другу в WhatsApp — промокод <b>QUTTY1000</b> подарит скидку 1 000 ₸!</div>
+                </div>
+                <button onclick="resetDemo()" class="w-full py-2.5 rounded-xl bg-slate-950 text-white text-xs font-bold cursor-pointer">
+                  Начать демо заново →
+                </button>
+              </div>
+            ` : `
+              <div class="bg-white rounded-3xl border border-slate-200 shadow-md overflow-hidden">
+                <div class="p-3 bg-gradient-to-r from-amber-300 to-yellow-200 flex items-center justify-between">
+                  <div>
+                    <div class="text-[10px] font-extrabold uppercase text-slate-800">ПРОПУСК НА ВЫДАЧУ</div>
+                    <div class="text-sm font-extrabold text-slate-950">${gift.brand}</div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded-full bg-white text-[10px] font-bold text-emerald-700">${state.orderStage >= 3 ? 'Готов на кассе!' : 'Готовится'}</span>
+                </div>
+
+                <div class="p-4 text-center space-y-2.5">
+                  <div class="text-xs font-extrabold text-slate-900">${prod.title}</div>
+                  <div class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl py-1.5 px-2">
+                    + БЕСПЛАТНО: ${gift.bonusName}
+                  </div>
+                  <div class="text-[11px] text-slate-600"><b>${br.name}</b> (${br.crossing}) • ${state.pickupTime}</div>
+
+                  <div class="p-2.5 rounded-2xl bg-slate-50 border border-dashed border-slate-300 flex flex-col items-center gap-2">
+                    <div class="flex items-center gap-3">
+                      <svg viewBox="0 0 42 42" class="w-14 h-14 bg-white p-1 rounded-lg border border-slate-200">
+                        <rect x="2" y="2" width="12" height="12" fill="#0f172a"/><rect x="4" y="4" width="8" height="8" fill="#fff"/><rect x="6" y="6" width="4" height="4" fill="#0f172a"/>
+                        <rect x="28" y="2" width="12" height="12" fill="#0f172a"/><rect x="30" y="4" width="8" height="8" fill="#fff"/><rect x="32" y="6" width="4" height="4" fill="#0f172a"/>
+                        <rect x="2" y="28" width="12" height="12" fill="#0f172a"/><rect x="4" y="30" width="8" height="8" fill="#fff"/><rect x="6" y="32" width="4" height="4" fill="#0f172a"/>
+                        <rect x="17" y="4" width="4" height="4" fill="#0f172a"/><rect x="16" y="16" width="6" height="6" fill="#0f172a"/>
+                        <rect x="24" y="18" width="5" height="4" fill="#0f172a"/><rect x="18" y="26" width="4" height="6" fill="#0f172a"/>
+                        <rect x="28" y="34" width="10" height="4" fill="#0f172a"/><rect x="26" y="25" width="6" height="4" fill="#0f172a"/>
+                      </svg>
+                      <div class="text-left text-[11px]">
+                        <div class="font-bold text-slate-900">Покажите кассиру</div>
+                        <div class="font-mono font-bold text-slate-700">8809-4421-9012</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onclick="simulateCashierScan()"
+                    class="w-full py-3 px-4 rounded-2xl bg-emerald-600 text-white font-extrabold text-xs hover:bg-emerald-700 transition shadow cursor-pointer"
+                  >
+                    📷 Симулировать скан на кассе ${gift.brand}
+                  </button>
+                </div>
+              </div>
+            `}
+          </div>
+        `;
+      }
+
+      const stage = state.orderStage || 1;
+      const steps = [
+        { num: 1, title: 'Заказ передан в ' + gift.brand, sub: `Уведомление ушло в Telegram-бот` },
+        { num: 2, title: 'Сборка подарка', sub: `${prod.title}` },
+        { num: 3, title: 'Курьер Яндекс в пути', sub: `${state.courierName}` },
+        { num: 4, title: 'Доставлено!', sub: `Получено: ${state.recipientName}` }
+      ];
+
+      return `
+        <div class="sticky top-0 z-10 bg-amber-300 px-4 py-3 flex items-center justify-between border-b border-amber-400/50">
+          <button onclick="goToStep(3)" class="text-xs font-bold text-slate-900 cursor-pointer">← Назад</button>
+          <span class="text-xs font-extrabold text-slate-950">Статус доставки</span>
+          <span class="text-xs">🛵</span>
+        </div>
+
+        <div class="p-4 space-y-3.5">
+          <div class="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500">Заказ #QG-8421</span>
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${stage === 4 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                ${stage === 1 ? 'Ждём партнёра' : stage === 2 ? 'Собирается' : stage === 3 ? 'Курьер в пути' : 'Доставлен'}
+              </span>
+            </div>
+
+            <div class="space-y-2.5">
+              ${steps.map(s => {
+                const done = stage >= s.num;
+                return `
+                  <div class="flex items-start gap-2.5">
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${done ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500'}">
+                      ${done ? '✓' : s.num}
+                    </div>
+                    <div class="pb-2 border-b border-slate-100 flex-1 min-w-0">
+                      <div class="text-xs font-bold ${done ? 'text-slate-900' : 'text-slate-400'}">${s.title}</div>
+                      <div class="text-[11px] truncate ${done ? 'text-slate-600' : 'text-slate-400'}">${s.sub}</div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
+            <div class="font-bold">🎁 Скидка 1 000 ₸ на следующий подарок</div>
+            <p class="text-[11px] text-amber-800">Вместо сдачи на балансе дарим промокод <b>QUTTY1000</b> — получатель сам станет вашим B2C-клиентом!</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBotPanel() {
+      const gift = getGift();
+      document.getElementById('bot-merchant-name').textContent = `${gift.brand} (${gift.branchCount})`;
+
+      const feed = document.getElementById('bot-feed');
+      if (state.botLogs.length === 0) {
+        feed.innerHTML = `
+          <div class="p-3 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs text-[var(--muted-foreground)] space-y-1">
+            <div class="font-semibold text-[var(--foreground)]">Ожидаем оформление заказа...</div>
+            <p>Покажите менеджеру <b>${gift.brand}</b>, как предоплаченные заказы приходят прямо в Telegram — без планшетов и интеграции с кассой.</p>
+          </div>
+        `;
+      } else {
+        feed.innerHTML = state.botLogs.map(log => `
+          <div class="p-3 rounded-xl border text-xs space-y-1 ${
+            log.sender === 'merchant'
+              ? 'bg-emerald-500/10 border-emerald-500/30 ml-6'
+              : 'bg-[var(--card)] border-[var(--border)] mr-4'
+          }">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-bold text-[var(--foreground)]">${log.title}</span>
+              <span class="text-[10px] text-[var(--muted-foreground)] font-mono">${log.time}</span>
+            </div>
+            <div class="text-[var(--muted-foreground)] leading-relaxed">${log.body}</div>
+          </div>
+        `).join('');
+        feed.scrollTop = feed.scrollHeight;
+      }
+
+      const actions = document.getElementById('bot-actions');
+      if (state.orderStage === 0) {
+        actions.innerHTML = `
+          <div class="text-xs text-[var(--muted-foreground)] flex items-center justify-between">
+            <span>Выберите точку на карте 2GIS или перейдите сразу к получению.</span>
+            <button onclick="goToStep(3)" class="px-2.5 py-1 rounded-lg border border-[var(--border)] text-[var(--foreground)] font-semibold hover:opacity-80 cursor-pointer">
+              К шагу 3 →
+            </button>
+          </div>
+        `;
+      } else if (state.orderStage === 4) {
+        actions.innerHTML = `
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-semibold text-emerald-500">✓ Выполнено • Выплата на Kaspi в 21:00</span>
+            <button onclick="resetDemo()" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold cursor-pointer">
+              Новый тест
+            </button>
+          </div>
+        `;
+      } else {
+        const isPickup = state.redemptionType === 'pickup';
+        actions.innerHTML = `
+          <div class="text-[11px] font-semibold text-[var(--muted-foreground)] mb-1.5">
+            Кнопки сотрудника заведения в Telegram:
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button
+              onclick="botAcceptPrep()"
+              ${state.orderStage >= 2 ? 'disabled' : ''}
+              class="px-3 py-2 rounded-xl text-xs font-bold border transition ${
+                state.orderStage >= 2
+                  ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-500 cursor-default'
+                  : 'bg-sky-500 text-white border-sky-600 hover:bg-sky-600 cursor-pointer'
+              }"
+            >
+              ${state.orderStage >= 2 ? '✓ Собираем' : '✅ Принять заказ'}
+            </button>
+            <button
+              onclick="botDispatchCourier()"
+              ${state.orderStage >= 3 ? 'disabled' : ''}
+              class="px-3 py-2 rounded-xl text-xs font-bold border transition ${
+                state.orderStage >= 3
+                  ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-500 cursor-default'
+                  : 'bg-amber-400 text-slate-950 border-amber-500 hover:bg-amber-300 cursor-pointer'
+              }"
+            >
+              ${state.orderStage >= 3
+                ? (isPickup ? '✓ Ждёт на кассе' : '✓ Курьер вызван')
+                : (isPickup ? '🛍️ Готово к выдаче' : '🛵 Вызвать Яндекс')}
+            </button>
+            <button
+              onclick="botMarkDelivered()"
+              class="px-3 py-2 rounded-xl text-xs font-bold border border-[var(--border)] bg-[var(--background)] hover:opacity-80 transition cursor-pointer"
+            >
+              ${isPickup ? '📷 Выдано по QR' : '🎉 Доставлено'}
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function renderScorecard() {
+      const gift = getGift();
+      const badge = document.getElementById('scorecard-badge');
+      const cardPickup = document.getElementById('card-econ-pickup');
+      const cardDelivery = document.getElementById('card-econ-delivery');
+      const econ = document.getElementById('unit-econ-box');
+
+      const pickupPartnerRev = gift.giftRetailValue + gift.bonusWholesaleCost;
+      const pickupPayout = Math.round(pickupPartnerRev * (1 - gift.partnerPct / 100));
+      const pickupPlatformNet = gift.allInPrice - pickupPayout;
+
+      const delPayout = Math.round(gift.giftRetailValue * (1 - gift.partnerPct / 100));
+      const yandexCost = state.surgeActive
+        ? (state.surgeChoice === 'offpeak' ? 1900 : 3800)
+        : 2100;
+      const recipientTopUp = (state.surgeActive && state.surgeChoice === 'rush') ? 1300 : 0;
+      const delPlatformNet = (gift.allInPrice + recipientTopUp) - delPayout - yandexCost;
+
+      const pickupActive = state.claimTab === 'pickup';
+
+      badge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500';
+      badge.textContent = '0 ₸ наценки для клиента';
+
+      cardPickup.className = `p-3 rounded-xl border transition-all ${
+        pickupActive
+          ? 'bg-emerald-500/10 border-emerald-500/50 ring-1 ring-emerald-500/30'
+          : 'bg-[var(--background)] border-[var(--border)]'
+      }`;
+      cardPickup.innerHTML = `
+        <div class="flex items-center justify-between font-bold">
+          <span>🏪 Самовывоз + Бонус</span>
+          <span class="text-emerald-500">Выгоднее всем</span>
+        </div>
+        <div class="mt-2 space-y-1 text-[var(--muted-foreground)]">
+          <div class="flex justify-between"><span>Чек (HR / клиент):</span><b class="text-[var(--foreground)]">15 000 ₸</b></div>
+          <div class="flex justify-between"><span>Выплата ${gift.brand}:</span><b class="text-emerald-500">${formatKzt(pickupPayout)} (+1 200 ₸)</b></div>
+          <div class="flex justify-between"><span>Яндекс Курьер:</span><b>0 ₸</b></div>
+          <div class="flex justify-between pt-1 border-t border-[var(--border)]"><span>Ваша маржа:</span><b class="text-emerald-500">${formatKzt(pickupPlatformNet)} (25,3%)</b></div>
+        </div>
+      `;
+
+      cardDelivery.className = `p-3 rounded-xl border transition-all ${
+        !pickupActive
+          ? 'bg-amber-500/10 border-amber-500/50 ring-1 ring-amber-500/30'
+          : 'bg-[var(--background)] border-[var(--border)]'
+      }`;
+      cardDelivery.innerHTML = `
+        <div class="flex items-center justify-between font-bold">
+          <span>🛵 Доставка Яндекс Авто</span>
+          <span class="text-amber-500">${state.surgeActive ? 'Защита от пика' : 'Стандарт'}</span>
+        </div>
+        <div class="mt-2 space-y-1 text-[var(--muted-foreground)]">
+          <div class="flex justify-between"><span>Оплата (с учётом пика):</span><b class="text-[var(--foreground)]">${formatKzt(gift.allInPrice + recipientTopUp)}</b></div>
+          <div class="flex justify-between"><span>Выплата ${gift.brand}:</span><b class="text-[var(--foreground)]">${formatKzt(delPayout)}</b></div>
+          <div class="flex justify-between"><span>Тариф Яндекса:</span><b class="${state.surgeActive && state.surgeChoice==='rush' ? 'text-rose-500' : ''}">${formatKzt(yandexCost)}</b></div>
+          <div class="flex justify-between pt-1 border-t border-[var(--border)]"><span>Ваша маржа:</span><b class="text-[var(--foreground)]">${formatKzt(delPlatformNet)}</b></div>
+        </div>
+      `;
+
+      econ.innerHTML = `
+        <div class="font-bold text-[var(--foreground)]">Живая карта 2GIS: как работает в питче</div>
+        <p class="text-[var(--muted-foreground)] leading-relaxed">
+          Клиент видит реальные здания и перекрёстки 2GIS для всех 23 точек. Если до ближайшего <b>BAL Bakery</b> 5 минут пешком, получатель охотно выбирает самовывоз за бесплатный кофе/торт, а вы экономите 2 100 ₸ на курьере.
+        </p>
+      `;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    renderAll();
+
+    if (typeof window.L !== 'undefined') {
+      dgMainMap = L.map('dg-main-map', {
+        center: [43.241, 76.926],
+        zoom: 12,
+        zoomControl: true
+      });
+      dgMainReady = true;
+      L.tileLayer('https://{s}.maps.2gis.com/tiles?x={x}&y={y}&z={z}&v=1', {
+        subdomains: ['tile0', 'tile1', 'tile2', 'tile3'],
+        maxZoom: 18,
+        attribution: '© 2GIS'
+      }).addTo(dgMainMap);
+      renderMainDgMarkers(true);
+      dgMainMap.on('zoomend', () => {
+        renderMainDgMarkers(false);
+      });
+    } else {
+      document.getElementById('dg-main-map').innerHTML = `
+        <div class="h-full flex items-center justify-center p-4 text-center text-xs text-slate-300">
+          Не удалось загрузить карту Leaflet (проверьте интернет или откройте через браузер).
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
