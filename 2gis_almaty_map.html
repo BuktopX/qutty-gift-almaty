@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Qutty Gift Алматы — Карта 2GIS (5 партнёров • 23 точки)</title>
+  <title>Syila Алматы — Карта 2GIS (6 партнёров • 25 точек)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Стандартный Leaflet 1.9.4 + прямые тайлы 2GIS Алматы -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -26,7 +26,7 @@
     .leaflet-popup-tip {
       background: #ffffff !important;
     }
-    .qutty-pin {
+    .syila-pin {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -42,7 +42,7 @@
       cursor: pointer;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .qutty-pin-compact {
+    .syila-pin-compact {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -58,9 +58,9 @@
       cursor: pointer;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .qutty-pin:hover,
-    .qutty-pin-compact:hover,
-    .qutty-pin-active {
+    .syila-pin:hover,
+    .syila-pin-compact:hover,
+    .syila-pin-active {
       transform: scale(1.12);
       border-color: #0f172a;
       box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.72), 0 8px 18px rgba(15, 23, 42, 0.45);
@@ -83,13 +83,13 @@
             </a>
           </div>
           <h1 class="text-sm sm:text-base font-extrabold text-white mt-0.5">
-            Qutty Gift — Все 23 филиала в Алматы с точными перекрёстками
+            Syila (syila.kz) — Все 25 точек в Алматы с точными перекрёстками
           </h1>
         </div>
       </div>
 
       <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold text-emerald-400">
-        <span>🗺️ Карта 2GIS Алматы • 5 сетей • 23 точки</span>
+        <span>🗺️ Карта 2GIS Алматы • 6 партнёров • 25 точек</span>
       </div>
     </div>
 
@@ -176,88 +176,106 @@
         ]
       },
       {
-        id: 'bowler',
-        brand: 'Bowler Coffee Roasters',
-        short: 'Bowler',
-        category: 'Обжарка кофе',
-        emoji: '☕',
+        id: 'deliberry',
+        brand: 'Deliberry',
+        short: 'Deliberry',
+        category: 'Ягоды в шоколаде',
+        emoji: '🍓',
+        color: '#e11d48',
+        hours: '09:00–23:00',
+        bonus: 'Бесплатный мини-стаканчик ягод в бельгийском шоколаде',
+        products: [
+          'Новогодний бокс «Клубника и малина в шоколаде»',
+          'Сет «Бельгийский трюфель и ягоды» (20 шт.)',
+          'Шоко-букет комплимент к празднику'
+        ],
+        branches: [
+          { name: 'пр. Сейфуллина, 472', lat: 43.2553, lng: 76.9331, crossing: 'уг. ул. Толе би / Казыбек би (Золотой квадрат)', district: 'Алмалинский' },
+          { name: 'ул. Толе би, 176', lat: 43.2523, lng: 76.9015, crossing: 'р-н ул. Ауэзова (Алмалинский р-н)', district: 'Алмалинский' },
+          { name: 'ул. Ади Шарипова, 17', lat: 43.2613, lng: 76.9210, crossing: 'р-н пр. Райымбека / Гоголя', district: 'Алмалинский' },
+          { name: 'ул. Розыбакиева, 281', lat: 43.1977, lng: 76.8939, crossing: 'выше пр. Аль-Фараби (р-н ТРЦ MEGA Alma-Ata)', district: 'Бостандыкский' },
+          { name: 'мкр. Мамыр-3, 22', lat: 43.2185, lng: 76.8425, crossing: 'р-н пр. Абая / ул. Саина', district: 'Ауэзовский' }
+        ]
+      },
+      {
+        id: 'hobby',
+        brand: 'Hobby Games',
+        short: 'Hobby Games',
+        category: 'Настольные игры',
+        emoji: '🎲',
         color: '#ea580c',
-        hours: '08:00–22:00',
-        bonus: 'Бесплатный фильтр V60 или большой капучино + печенье',
-        products: [
-          'Дуэт обжарщика: 2 пачки зерна по 250 г',
-          'Бокс дрип-кофе «Офис и Дом» (14 пакетов)',
-          'Кофейный сет «Гурман»: Зерно + Дрипы + Шоколад'
-        ],
-        branches: [
-          { name: 'пр. Достык, 308е', lat: 43.2123, lng: 76.9687, crossing: 'уг. ул. Оспанова (Верхний Достык / Терренкур)', district: 'Медеуский' },
-          { name: 'пр. Жибек Жолы, 81', lat: 43.2621, lng: 76.9432, crossing: 'уг. пр. Абылай хана и ул. Панфилова (Арбат)', district: 'Алмалинский' },
-          { name: 'пр. Жибек Жолы, 53', lat: 43.2618, lng: 76.9542, crossing: 'уг. ул. Пушкина (Зелёный базар)', district: 'Медеуский' },
-          { name: 'ул. Кабанбай батыра, 109', lat: 43.2504, lng: 76.9325, crossing: 'уг. ул. Масанчи (Золотой квадрат)', district: 'Алмалинский' }
-        ]
-      },
-      {
-        id: 'oreh',
-        brand: 'Сеть «Орех»',
-        short: 'Орех',
-        category: 'Гастро и Орехи',
-        emoji: '🥜',
-        color: '#10b981',
-        hours: '09:00–21:00',
-        bonus: 'Бесплатно 150 г карамелизированного пекана или баночка мёда',
-        products: [
-          'Деревянный бокс «Премиум Орехи и Горный Мёд»',
-          'Праздничный сет «Восточный Дастархан»',
-          'Гастро-бокс «Чай и Хруст»'
-        ],
-        branches: [
-          { name: 'ул. Тимирязева, 42', lat: 43.2250, lng: 76.9068, crossing: 'уг. ул. Ауэзова (КЦДС «Атакент»)', district: 'Бостандыкский' },
-          { name: 'мкр. Коктем-1, 29', lat: 43.2292, lng: 76.9218, crossing: 'наб. реки Есентай (Весновка) / уг. ул. Тимирязева', district: 'Бостандыкский' },
-          { name: 'мкр. Самал-2, 111', lat: 43.2334, lng: 76.9568, crossing: 'уг. пр. Достык и ул. Жолдасбекова (ТРЦ Dostyk Plaza)', district: 'Медеуский' },
-          { name: 'ул. Гоголя, 87', lat: 43.2600, lng: 76.9433, crossing: 'уг. ул. Панфилова (рядом со старой площадью)', district: 'Медеуский' }
-        ]
-      },
-      {
-        id: 'aromaty',
-        brand: 'Центр Аромата (Aromaty.kz)',
-        short: 'Ароматы',
-        category: 'Ароматы и Уют',
-        emoji: '🕯️',
-        color: '#8b5cf6',
         hours: '10:00–21:00',
-        bonus: 'Бесплатный рефилл автопарфюма или аромасаше для гардероба',
+        bonus: 'Бесплатные протекторы для карт или мини-игра в дорогу',
         products: [
-          'Свеча WoodWick с деревянным фитилем + Спички',
-          'Диффузор для дома Millefiori Milano (100 мл)',
-          'Сет «Авто + Офис»: Автопарфюм + Мини-диффузор'
+          'Хит вечеринки: «Бункер» или «Кодовые имена» + доп.',
+          'Стратегия на вечер: «Каркассон» или «Ticket to Ride»',
+          'Пати-набор: «Имаджинариум» или «Взрывные котята»'
         ],
         branches: [
-          { name: 'ул. Кабанбай батыра, 91', lat: 43.2512, lng: 76.9435, crossing: 'уг. ул. Панфилова (напротив ГАТОБ им. Абая)', district: 'Алмалинский' },
-          { name: 'пр. Толе би, 187', lat: 43.2521, lng: 76.8982, crossing: 'уг. пр. Гагарина и ул. Жарокова (ТД «Тумар»)', district: 'Алмалинский' },
-          { name: 'ул. Кабдолова, 1/8', lat: 43.2355, lng: 76.8315, crossing: 'уг. ул. Саин и пр. Алтынсарина (ТК «Армада»)', district: 'Ауэзовский' }
+          { name: 'ул. Гоголя, 74', lat: 43.2593, lng: 76.9397, crossing: 'уг. ул. Панфилова / Аблай хана (Золотой квадрат)', district: 'Алмалинский' },
+          { name: 'пр. Жибек Жолы, 135', lat: 43.2614, lng: 76.9292, crossing: 'р-н ул. Желтоксан / Наурызбай батыра', district: 'Алмалинский' },
+          { name: 'ТРЦ Dostyk Plaza (Самал-2, 111)', lat: 43.2334, lng: 76.9568, crossing: 'уг. пр. Достык и ул. Жолдасбекова (3 этаж)', district: 'Медеуский' },
+          { name: 'ул. Ауэзова, 171', lat: 43.2286, lng: 76.9052, crossing: 'р-н ул. Тимирязева / Атакент', district: 'Бостандыкский' }
         ]
       },
       {
-        id: 'romantic',
-        brand: 'Romantic Flowers',
-        short: 'Romantic',
-        category: 'Готовые букеты',
-        emoji: '🌲',
-        color: '#f43f5e',
-        hours: '00:00–24:00 (24/7)',
-        bonus: 'Бесплатная мини-коробка Raffaello или стеклянная ваза',
+        id: 'luxe',
+        brand: 'Luxe Massage',
+        short: 'Luxe Spa',
+        category: 'Спа и Массаж',
+        emoji: '💆',
+        color: '#10b981',
+        hours: '10:00–22:00',
+        bonus: '+15 минут массаж головы/воротниковой зоны и травяной чай',
         products: [
-          'Новогодний бокс из датской ели «Нобилис»',
-          'Облако из 9 кустовых роз в фирменной сумочке',
-          'Белоснежный монобукет из хризантем и эвкалипта',
-          'Пастельная композиция в шляпной коробке'
+          'Антистресс-сеанс «Спина + Шея» (60 мин + бонус 15 мин)',
+          'Расслабляющий классический или тайский ритуал (60 мин)',
+          'Спортивный восстановительный массаж (60 мин)'
         ],
         branches: [
-          { name: 'пр. Абая, 115', lat: 43.2399, lng: 76.9025, crossing: 'уг. ул. Ауэзова (м. Алатау / Жарокова — 24/7)', district: 'Бостандыкский' },
-          { name: 'пр. Абылай хана, 64', lat: 43.2598, lng: 76.9430, crossing: 'уг. ул. Гоголя и пр. Жибек Жолы (ЦУМ / Арбат)', district: 'Алмалинский' },
-          { name: 'ул. Тимирязева, 20а', lat: 43.2275, lng: 76.9288, crossing: 'уг. ул. Байтурсынова (напротив КазНУ)', district: 'Бостандыкский' },
-          { name: 'ул. Радостовца, 292', lat: 43.2061, lng: 76.8976, crossing: 'уг. ул. Левитана (выше ТРЦ MEGA / Magnum)', district: 'Бостандыкский' },
-          { name: 'пр. Достык, 42', lat: 43.2515, lng: 76.9566, crossing: 'уг. ул. Кабанбай батыра и ул. Богенбай батыра', district: 'Медеуский' }
+          { name: 'ул. Желтоксан, 111а', lat: 43.2554, lng: 76.9389, crossing: 'БЦ «Желтоксан», 1 эт. (Золотой квадрат)', district: 'Алмалинский' },
+          { name: 'ул. Карасай батыра, 180', lat: 43.2479, lng: 76.8996, crossing: 'уг. ул. Клочкова (2 этаж)', district: 'Алмалинский' },
+          { name: 'ул. Нахимова, 16', lat: 43.2251, lng: 76.9363, crossing: 'р-н пр. Аль-Фараби / Есентай', district: 'Бостандыкский' },
+          { name: 'ул. Кенесары хана, 54/1', lat: 43.1920, lng: 76.8680, crossing: 'мкр. Хан Тенгри', district: 'Наурызбайский' }
+        ]
+      },
+      {
+        id: 'kaori',
+        brand: 'Kaori (K-Beauty)',
+        short: 'Kaori',
+        category: 'Корейский уход',
+        emoji: '🧴',
+        color: '#8b5cf6',
+        hours: '10:00–22:00',
+        bonus: 'Набор корейских тканевых масок и тревел-крем для рук',
+        products: [
+          'Зимний уход-бокс «Увлажнение и Защита»',
+          'Сет «Вечерний релакс»: Патчи + Маски + Крем',
+          'Унисекс-бокс «Чистая кожа» (Очищение + SPF/Крем)'
+        ],
+        branches: [
+          { name: 'ТРЦ Atakent Mall (ул. Тимирязева, 42)', lat: 43.2250, lng: 76.9068, crossing: 'уг. ул. Ауэзова (1 этаж)', district: 'Бостандыкский' },
+          { name: 'ТРЦ Silk Way City (ул. Толе би, 65)', lat: 43.2548, lng: 76.9386, crossing: 'уг. ул. Желтоксан (Золотой квадрат, 0 эт.)', district: 'Алмалинский' },
+          { name: 'ТРК ADK (ул. Сатпаева, 90/28)', lat: 43.2309, lng: 76.8794, crossing: 'уг. ул. Брусиловского (2 этаж)', district: 'Бостандыкский' },
+          { name: 'ТРЦ Asia Park (пр. Райымбека, 514А)', lat: 43.2444, lng: 76.8360, crossing: 'уг. ул. Саина (1 этаж)', district: 'Ауэзовский' }
+        ]
+      },
+      {
+        id: 'barber',
+        brand: 'Авторский барбершоп (Dikidi)',
+        short: 'Барбершоп',
+        category: 'Барбершоп (Dikidi)',
+        emoji: '💈',
+        color: '#0284c7',
+        hours: '10:00–21:00',
+        bonus: 'Чёрная очищающая маска для лица + премиум-укладка (ценность ~15 000 ₸)',
+        products: [
+          'Комплекс «Полная перезагрузка»: Стрижка + Борода + Чёрная маска',
+          'Стрижка + Королевское бритьё горячим полотенцем + Тоник',
+          'Стрижка + Уход для кожи головы и укладка (действует 60 дней)'
+        ],
+        branches: [
+          { name: 'Центр Алматы (студия партнёра Dikidi)', lat: 43.2465, lng: 76.9420, crossing: 'р-н ул. Курмангазы / пр. Назарбаева (точная точка при подтверждении)', district: 'Алмалинский' }
         ]
       }
     ];
@@ -384,13 +402,13 @@
           const isSelected = partner.id === state.selectedPartnerId && idx === state.selectedBranchIdx;
           const compactMode = z <= 13 && !isSelected;
 
-          const pinClass = compactMode ? 'qutty-pin-compact' : 'qutty-pin';
-          const activeClass = isSelected ? 'qutty-pin-active' : '';
+          const pinClass = compactMode ? 'syila-pin-compact' : 'syila-pin';
+          const activeClass = isSelected ? 'syila-pin-active' : '';
           const iconSize = compactMode ? [74, 24] : [116, 28];
           const iconAnchor = compactMode ? [37, 12] : [58, 14];
 
           const icon = L.divIcon({
-            className: 'qutty-leaflet-wrap',
+            className: 'syila-leaflet-wrap',
             html: `<div style="display:flex;justify-content:center;"><div class="${pinClass} ${activeClass}" style="background:${partner.color}">${partner.emoji} ${partner.short}</div></div>`,
             iconSize,
             iconAnchor
@@ -465,7 +483,7 @@
               : 'bg-slate-950 text-slate-300 border-slate-700 hover:border-slate-500'
           }"
         >
-          🗺️ Все 5 сетей (${TOTAL_BRANCHES})
+          🗺️ Все ${PARTNERS.length} сетей (${TOTAL_BRANCHES})
         </button>
         ${PARTNERS.map(p => {
           const on = state.activeFilters.includes(p.id);

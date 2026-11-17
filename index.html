@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Qutty Gift Алматы — Демо Новогоднего пилота (5 брендов • 23 точки 2GIS)</title>
+  <title>Syila Алматы — Демо Новогоднего пилота (6 брендов • 25 точек 2GIS)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Стандартный Leaflet 1.9.4 + прямые тайлы 2GIS Алматы -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -44,7 +44,7 @@
     .leaflet-popup-tip {
       background: #ffffff !important;
     }
-    .qutty-pin {
+    .syila-pin {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -59,7 +59,7 @@
       white-space: nowrap;
       cursor: pointer;
     }
-    .qutty-pin-compact {
+    .syila-pin-compact {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -74,7 +74,7 @@
       white-space: nowrap;
       cursor: pointer;
     }
-    .qutty-pin-active {
+    .syila-pin-active {
       transform: scale(1.12);
       border-color: #0f172a;
       box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.72), 0 6px 14px rgba(15, 23, 42, 0.45);
@@ -163,7 +163,7 @@
         <div class="space-y-1">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-500 border border-emerald-500/40">
-              🎄 Новогодний пилот • 5 брендов • 23 филиала в Алматы • 2GIS
+              🎄 Syila • 6 партнёров (2 еда / 2 лайфстайл / 2 услуги) • 25 точек в 2GIS
             </span>
             <a
               href="2gis_almaty_map.html"
@@ -172,11 +172,11 @@
               🗺️ Полный экран 2GIS ↗
             </a>
             <span class="text-xs text-[var(--muted-foreground)] font-medium">
-              Тариф 15 000 ₸ «Всё включено» • 21–30 дек • iikoCloud API
+              Тариф 15 000 ₸ «Всё включено» • syila.kz
             </span>
           </div>
           <h1 class="text-lg md:text-xl font-bold tracking-tight text-[var(--foreground)]">
-            Qutty Gift Алматы • Демо Новогоднего пилота (выбор из 5 брендов)
+            Syila Алматы • Демо Новогоднего пилота (выбор из 6 брендов)
           </h1>
         </div>
 
@@ -202,8 +202,8 @@
       <!-- Навигация по 4 шагам -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
         <button onclick="goToStep(1)" id="nav-step-1" class="step-pill text-left px-3 py-2 rounded-xl border text-xs transition cursor-pointer">
-          <div class="font-semibold">1. Витрина (5 брендов)</div>
-          <div class="text-[var(--muted-foreground)] truncate">Торты, кофе, орехи, ароматы, цветы</div>
+          <div class="font-semibold">1. Витрина (6 брендов)</div>
+          <div class="text-[var(--muted-foreground)] truncate">Торты, ягоды, игры, спа, уход, барбер</div>
         </button>
         <button onclick="goToStep(2)" id="nav-step-2" class="step-pill text-left px-3 py-2 rounded-xl border text-xs transition cursor-pointer">
           <div class="font-semibold">2. Telegram и распаковка</div>
@@ -285,7 +285,7 @@
           <div id="map-crossing-directory" class="max-h-40 overflow-y-auto phone-scroll grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1"></div>
         </section>
 
-        <!-- Интеграция кассы iikoFront (iikoCloud API) + @QuttyPartnerBot -->
+        <!-- Интеграция кассы iikoFront / Dikidi + @SyilaPartnerBot -->
         <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">
           <div class="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between gap-3">
             <div class="flex items-center gap-2.5">
@@ -294,17 +294,17 @@
               </div>
               <div>
                 <div class="text-sm font-bold flex items-center gap-2 flex-wrap">
-                  <span>Касса iikoFront (iikoCloud API) + @QuttyPartnerBot</span>
+                  <span>Касса iiko / Dikidi + @SyilaPartnerBot</span>
                   <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500 font-semibold">
                     0% конфликта с Kwaaka
                   </span>
                 </div>
                 <div class="text-xs text-[var(--muted-foreground)]">
-                  Автосоздание предоплаченного чека в iiko + Telegram • <span id="bot-merchant-name">BAL Bakery (7 филиалов)</span>
+                  Автозаявка в iiko, запись на услуги или Telegram-бот • <span id="bot-merchant-name">BAL Bakery (7 филиалов)</span>
                 </div>
               </div>
             </div>
-            <span class="text-xs text-[var(--muted-foreground)] font-mono" id="bot-order-id">#QG-8421</span>
+            <span class="text-xs text-[var(--muted-foreground)] font-mono" id="bot-order-id">#SY-8421</span>
           </div>
 
           <div id="bot-feed" class="p-4 space-y-3 max-h-[240px] overflow-y-auto phone-scroll bg-[var(--background)]/40">
@@ -409,228 +409,264 @@
         `
       },
       {
-        id: 'bowler',
-        category: 'Обжарка кофе',
-        brand: 'Bowler Coffee Roasters',
-        shortBrand: 'Bowler',
-        emoji: '☕',
-        pinColor: '#ea580c',
-        title: 'Свежеобжаренный кофе и дрип-боксы',
-        shortTitle: 'Набор от обжарщика',
+        id: 'deliberry',
+        category: 'Ягоды в шоколаде',
+        brand: 'Deliberry',
+        shortBrand: 'Deliberry',
+        emoji: '🍓',
+        pinColor: '#e11d48',
+        title: 'Клубника в бельгийском шоколаде',
+        shortTitle: 'Ягодный бокс',
         allInPrice: 15000,
         giftRetailValue: 12500,
         fulfillmentPool: 2500,
-        hours: '08:00–22:00',
-        branchCount: '4 филиала в Алматы',
+        hours: '09:00–23:00',
+        branchCount: '5 филиалов в Алматы (сеть 8 точек)',
         branchCoords: [
-          { name: 'пр. Достык, 308е', lat: 43.2123, lng: 76.9687, crossing: 'уг. ул. Оспанова (Верхний Достык / Терренкур)', district: 'Медеуский' },
-          { name: 'пр. Жибек Жолы, 81', lat: 43.2621, lng: 76.9432, crossing: 'уг. пр. Абылай хана и ул. Панфилова (Арбат)', district: 'Алмалинский' },
-          { name: 'пр. Жибек Жолы, 53', lat: 43.2618, lng: 76.9542, crossing: 'уг. ул. Пушкина (Зелёный базар)', district: 'Медеуский' },
-          { name: 'ул. Кабанбай батыра, 109', lat: 43.2504, lng: 76.9325, crossing: 'уг. ул. Масанчи (Золотой квадрат)', district: 'Алмалинский' }
+          { name: 'пр. Сейфуллина, 472', lat: 43.2553, lng: 76.9331, crossing: 'уг. ул. Толе би / Казыбек би (Золотой квадрат)', district: 'Алмалинский' },
+          { name: 'ул. Толе би, 176', lat: 43.2523, lng: 76.9015, crossing: 'р-н ул. Ауэзова (Алмалинский р-н)', district: 'Алмалинский' },
+          { name: 'ул. Ади Шарипова, 17', lat: 43.2613, lng: 76.9210, crossing: 'р-н пр. Райымбека / Гоголя', district: 'Алмалинский' },
+          { name: 'ул. Розыбакиева, 281', lat: 43.1977, lng: 76.8939, crossing: 'выше пр. Аль-Фараби (р-н ТРЦ MEGA Alma-Ata)', district: 'Бостандыкский' },
+          { name: 'мкр. Мамыр-3, 22', lat: 43.2185, lng: 76.8425, crossing: 'р-н пр. Абая / ул. Саина', district: 'Ауэзовский' }
         ],
-        bonusName: 'Бесплатный фильтр V60 или большой капучино + печенье',
+        bonusName: 'Бесплатный мини-стаканчик ягод в бельгийском шоколаде',
+        bonusRetail: 1500,
+        bonusWholesaleCost: 1500,
+        partnerPct: 20,
+        products: [
+          {
+            title: 'Новогодний бокс «Клубника и малина в шоколаде»',
+            desc: 'Отборная клубника в молочном и белом бельгийском шоколаде с зимним декором',
+            tag: 'Хит зимы'
+          },
+          {
+            title: 'Сет «Бельгийский трюфель и ягоды» (20 шт.)',
+            desc: 'Клубника, голубика и финики в шоколаде с ореховой посыпкой',
+            tag: 'Премиум'
+          },
+          {
+            title: 'Шоко-букет комплимент к празднику',
+            desc: 'Эффектный подарочный бокс с открыткой и золотой посыпкой',
+            tag: 'Вау-эффект'
+          }
+        ],
+        accentBg: 'from-rose-100 via-pink-50 to-amber-50',
+        svg: `
+          <svg viewBox="0 0 120 100" class="w-full h-full">
+            <rect x="22" y="40" width="76" height="44" rx="10" fill="#fff1f2" stroke="#e11d48" stroke-width="2.5"/>
+            <path d="M38 38 C32 48, 36 62, 43 66 C50 62, 54 48, 48 38 Z" fill="#e11d48"/>
+            <path d="M55 34 C49 45, 53 60, 60 65 C67 60, 71 45, 65 34 Z" fill="#78350f"/>
+            <path d="M72 38 C66 48, 70 62, 77 66 C84 62, 88 48, 82 38 Z" fill="#f43f5e"/>
+            <path d="M38 35 Q43 28 48 35 M55 31 Q60 24 65 31 M72 35 Q77 28 82 35" stroke="#16a34a" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M22 62 L98 62" stroke="#fbbf24" stroke-width="3"/>
+          </svg>
+        `
+      },
+      {
+        id: 'hobby',
+        category: 'Настольные игры',
+        brand: 'Hobby Games',
+        shortBrand: 'Hobby Games',
+        emoji: '🎲',
+        pinColor: '#ea580c',
+        title: 'Настольные игры для компании',
+        shortTitle: 'Настолки',
+        allInPrice: 15000,
+        giftRetailValue: 12500,
+        fulfillmentPool: 2500,
+        hours: '10:00–21:00',
+        branchCount: '4 магазина в Алматы',
+        branchCoords: [
+          { name: 'ул. Гоголя, 74', lat: 43.2593, lng: 76.9397, crossing: 'уг. ул. Панфилова / Аблай хана (Золотой квадрат)', district: 'Алмалинский' },
+          { name: 'пр. Жибек Жолы, 135', lat: 43.2614, lng: 76.9292, crossing: 'р-н ул. Желтоксан / Наурызбай батыра', district: 'Алмалинский' },
+          { name: 'ТРЦ Dostyk Plaza (Самал-2, 111)', lat: 43.2334, lng: 76.9568, crossing: 'уг. пр. Достык и ул. Жолдасбекова (3 этаж)', district: 'Медеуский' },
+          { name: 'ул. Ауэзова, 171', lat: 43.2286, lng: 76.9052, crossing: 'р-н ул. Тимирязева / Атакент', district: 'Бостандыкский' }
+        ],
+        bonusName: 'Бесплатные протекторы для карт или мини-игра в дорогу',
+        bonusRetail: 1500,
+        bonusWholesaleCost: 1500,
+        partnerPct: 20,
+        products: [
+          {
+            title: 'Хит вечеринки: «Бункер» или «Кодовые имена» + доп.',
+            desc: 'Идеальная игра для новогодних каникул с друзьями или командой (не портится!)',
+            tag: 'Хит IT-команд'
+          },
+          {
+            title: 'Стратегия на вечер: «Каркассон» или «Ticket to Ride»',
+            desc: 'Культовые настолки для семьи и друзей с простыми правилами',
+            tag: 'Семейная'
+          },
+          {
+            title: 'Пати-набор: «Имаджинариум» или «Взрывные котята»',
+            desc: 'Ассоциации и весёлые карточные баталии на 3–8 игроков',
+            tag: 'Для компании'
+          }
+        ],
+        accentBg: 'from-orange-100 via-amber-50 to-yellow-50',
+        svg: `
+          <svg viewBox="0 0 120 100" class="w-full h-full">
+            <rect x="24" y="34" width="38" height="38" rx="8" fill="#ea580c" stroke="#9a3412" stroke-width="2.5"/>
+            <circle cx="35" cy="45" r="3" fill="#fff"/><circle cx="43" cy="53" r="3" fill="#fff"/><circle cx="51" cy="61" r="3" fill="#fff"/>
+            <rect x="58" y="42" width="38" height="38" rx="8" fill="#fffbeb" stroke="#d97706" stroke-width="2.5"/>
+            <circle cx="69" cy="53" r="3" fill="#1e293b"/><circle cx="85" cy="53" r="3" fill="#1e293b"/>
+            <circle cx="69" cy="69" r="3" fill="#1e293b"/><circle cx="85" cy="69" r="3" fill="#1e293b"/><circle cx="77" cy="61" r="3" fill="#e11d48"/>
+          </svg>
+        `
+      },
+      {
+        id: 'luxe',
+        category: 'Спа и Массаж',
+        brand: 'Luxe Massage',
+        shortBrand: 'Luxe Spa',
+        emoji: '💆',
+        pinColor: '#10b981',
+        bookingOnly: true,
+        title: 'Антистресс-массаж 60 минут',
+        shortTitle: 'Массаж / Спа',
+        allInPrice: 15000,
+        giftRetailValue: 12500,
+        fulfillmentPool: 2500,
+        hours: '10:00–22:00',
+        branchCount: '4 студии в Алматы (запись)',
+        branchCoords: [
+          { name: 'ул. Желтоксан, 111а', lat: 43.2554, lng: 76.9389, crossing: 'БЦ «Желтоксан», 1 эт. (Золотой квадрат)', district: 'Алмалинский' },
+          { name: 'ул. Карасай батыра, 180', lat: 43.2479, lng: 76.8996, crossing: 'уг. ул. Клочкова (2 этаж)', district: 'Алмалинский' },
+          { name: 'ул. Нахимова, 16', lat: 43.2251, lng: 76.9363, crossing: 'р-н пр. Аль-Фараби / Есентай', district: 'Бостандыкский' },
+          { name: 'ул. Кенесары хана, 54/1', lat: 43.1920, lng: 76.8680, crossing: 'мкр. Хан Тенгри', district: 'Наурызбайский' }
+        ],
+        bonusName: '+15 минут массаж головы/воротниковой зоны и травяной чай',
         bonusRetail: 1800,
         bonusWholesaleCost: 1500,
         partnerPct: 20,
         products: [
           {
-            title: 'Дуэт обжарщика: 2 пачки зерна по 250 г',
-            desc: 'Эфиопия + Бразилия, свежая алматинская обжарка (любой помол бесплатно)',
-            tag: 'Для ценителей'
+            title: 'Антистресс-сеанс «Спина + Шея» (60 мин + бонус 15 мин)',
+            desc: 'Снятие офисного зажима после предновогодних дедлайнов • действует до конца февраля',
+            tag: 'Топ после IT-спринтов'
           },
           {
-            title: 'Бокс дрип-кофе «Офис и Дом» (14 пакетов)',
-            desc: 'Ассорти спешелти дрипов — заваривается прямо в чашке',
-            tag: 'Без кофемашины'
+            title: 'Расслабляющий классический или тайский ритуал (60 мин)',
+            desc: 'Полная перезагрузка мышц с аромамаслами в выбранной студии',
+            tag: 'Релакс'
           },
           {
-            title: 'Кофейный сет «Гурман»: Зерно + Дрипы + Шоколад',
-            desc: '250 г зерна, 6 дрип-пакетов и ремесленный шоколад',
-            tag: 'Комбо-бокс'
+            title: 'Спортивный восстановительный массаж (60 мин)',
+            desc: 'Глубокая проработка спины и плеч для активных сотрудников',
+            tag: 'Спорт'
           }
         ],
-        accentBg: 'from-stone-200 via-amber-50 to-orange-100',
+        accentBg: 'from-emerald-100 via-teal-50 to-sky-50',
         svg: `
           <svg viewBox="0 0 120 100" class="w-full h-full">
-            <ellipse cx="60" cy="86" rx="44" ry="7" fill="#d6d3d1" />
-            <rect x="26" y="32" width="32" height="50" rx="5" fill="#44403c" stroke="#1c1917" stroke-width="2.5"/>
-            <rect x="31" y="44" width="22" height="18" rx="3" fill="#fef3c7"/>
-            <rect x="62" y="38" width="32" height="44" rx="5" fill="#78350f" stroke="#451a03" stroke-width="2.5"/>
-            <rect x="67" y="49" width="22" height="16" rx="3" fill="#fde68a"/>
-            <circle cx="42" cy="53" r="4" fill="#78350f"/>
-            <circle cx="78" cy="57" r="4" fill="#44403c"/>
-            <path d="M52 22 Q56 14 52 10 M66 24 Q70 16 66 12" stroke="#a8a29e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <ellipse cx="60" cy="82" rx="40" ry="8" fill="#a7f3d0"/>
+            <ellipse cx="60" cy="64" rx="26" ry="11" fill="#065f46"/>
+            <ellipse cx="60" cy="49" rx="20" ry="9" fill="#047857"/>
+            <ellipse cx="60" cy="36" rx="14" ry="7" fill="#10b981"/>
+            <path d="M36 30 Q48 16 60 28 Q72 16 84 30" stroke="#34d399" stroke-width="3" fill="none" stroke-linecap="round"/>
           </svg>
         `
       },
       {
-        id: 'oreh',
-        category: 'Гастро и Орехи',
-        brand: 'Сеть «Орех»',
-        shortBrand: 'Орех',
-        emoji: '🥜',
-        pinColor: '#10b981',
-        title: 'Премиальный орехово-медовый бокс',
-        shortTitle: 'Гастро-бокс',
+        id: 'kaori',
+        category: 'Корейский уход',
+        brand: 'Kaori (K-Beauty)',
+        shortBrand: 'Kaori',
+        emoji: '🧴',
+        pinColor: '#8b5cf6',
+        title: 'Зимний K-Beauty бокс',
+        shortTitle: 'Косметика',
         allInPrice: 15000,
         giftRetailValue: 12500,
         fulfillmentPool: 2500,
-        hours: '09:00–21:00',
-        branchCount: '4 филиала в Алматы',
+        hours: '10:00–22:00',
+        branchCount: '4 бутика в ТРЦ Алматы',
         branchCoords: [
-          { name: 'ул. Тимирязева, 42', lat: 43.2250, lng: 76.9068, crossing: 'уг. ул. Ауэзова (КЦДС «Атакент»)', district: 'Бостандыкский' },
-          { name: 'мкр. Коктем-1, 29', lat: 43.2292, lng: 76.9218, crossing: 'наб. реки Есентай (Весновка) / уг. ул. Тимирязева', district: 'Бостандыкский' },
-          { name: 'мкр. Самал-2, 111', lat: 43.2334, lng: 76.9568, crossing: 'уг. пр. Достык и ул. Жолдасбекова (ТРЦ Dostyk Plaza)', district: 'Медеуский' },
-          { name: 'ул. Гоголя, 87', lat: 43.2600, lng: 76.9433, crossing: 'уг. ул. Панфилова (рядом со старой площадью)', district: 'Медеуский' }
+          { name: 'ТРЦ Atakent Mall (ул. Тимирязева, 42)', lat: 43.2250, lng: 76.9068, crossing: 'уг. ул. Ауэзова (1 этаж)', district: 'Бостандыкский' },
+          { name: 'ТРЦ Silk Way City (ул. Толе би, 65)', lat: 43.2548, lng: 76.9386, crossing: 'уг. ул. Желтоксан (Золотой квадрат, 0 эт.)', district: 'Алмалинский' },
+          { name: 'ТРК ADK (ул. Сатпаева, 90/28)', lat: 43.2309, lng: 76.8794, crossing: 'уг. ул. Брусиловского (2 этаж)', district: 'Бостандыкский' },
+          { name: 'ТРЦ Asia Park (пр. Райымбека, 514А)', lat: 43.2444, lng: 76.8360, crossing: 'уг. ул. Саина (1 этаж)', district: 'Ауэзовский' }
         ],
-        bonusName: 'Бесплатно 150 г карамелизированного пекана или баночка мёда',
+        bonusName: 'Набор корейских тканевых масок и тревел-крем для рук',
         bonusRetail: 1500,
         bonusWholesaleCost: 1500,
         partnerPct: 20,
         products: [
           {
-            title: 'Деревянный бокс «Премиум Орехи и Горный Мёд»',
-            desc: 'Макадамия, пекан, фисташки, кешью и баночка горного мёда',
-            tag: 'К столу'
+            title: 'Зимний уход-бокс «Увлажнение и Защита»',
+            desc: 'Корейская пенка + увлажняющий крем/сыворотка + бальзам для губ',
+            tag: 'Для зимы'
           },
           {
-            title: 'Праздничный сет «Восточный Дастархан»',
-            desc: 'Королевские финики, манго, инжир, миндаль и лукум',
-            tag: 'Без сахара'
+            title: 'Сет «Вечерний релакс»: Патчи + Маски + Крем',
+            desc: 'Полноценный домашний SPA-ритуал от ведущих корейских брендов',
+            tag: 'Хит продаж'
           },
           {
-            title: 'Гастро-бокс «Чай и Хруст»',
-            desc: 'Отборные орехи, крем-мёд с ягодами и горный травяной чай',
-            tag: 'Уютный сет'
+            title: 'Унисекс-бокс «Чистая кожа» (Очищение + SPF/Крем)',
+            desc: 'Базовый минималистичный уход, который подходит и девушкам, и парням',
+            tag: 'Унисекс'
           }
         ],
-        accentBg: 'from-amber-100 via-yellow-50 to-emerald-50',
+        accentBg: 'from-violet-100 via-purple-50 to-pink-50',
         svg: `
           <svg viewBox="0 0 120 100" class="w-full h-full">
-            <rect x="20" y="34" width="80" height="50" rx="8" fill="#d97706" stroke="#78350f" stroke-width="2.5"/>
-            <rect x="26" y="40" width="32" height="18" rx="4" fill="#fef3c7"/>
-            <rect x="62" y="40" width="32" height="18" rx="4" fill="#fde68a"/>
-            <rect x="26" y="61" width="32" height="18" rx="4" fill="#fed7aa"/>
-            <rect x="62" y="61" width="32" height="18" rx="4" fill="#fef08a"/>
-            <circle cx="38" cy="49" r="4" fill="#92400e"/><circle cx="48" cy="49" r="4" fill="#78350f"/>
-            <circle cx="74" cy="49" r="5" fill="#f59e0b"/><circle cx="84" cy="49" r="4" fill="#b45309"/>
-            <circle cx="38" cy="70" r="4" fill="#15803d"/><circle cx="48" cy="70" r="4" fill="#166534"/>
-            <circle cx="78" cy="70" r="6" fill="#eab308" stroke="#a16207" stroke-width="1.5"/>
+            <rect x="30" y="36" width="26" height="46" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="2.5"/>
+            <rect x="36" y="26" width="14" height="10" rx="2" fill="#6d28d9"/>
+            <rect x="64" y="48" width="28" height="34" rx="8" fill="#fce7f3" stroke="#db2777" stroke-width="2.5"/>
+            <rect x="62" y="42" width="32" height="8" rx="3" fill="#be185d"/>
+            <circle cx="43" cy="58" r="5" fill="#a78bfa"/>
+            <circle cx="78" cy="65" r="5" fill="#f472b6"/>
           </svg>
         `
       },
       {
-        id: 'aromaty',
-        category: 'Ароматы и Уют',
-        brand: 'Центр Аромата (Aromaty.kz)',
-        shortBrand: 'Ароматы',
-        emoji: '🕯️',
-        pinColor: '#8b5cf6',
-        title: 'Ароматы для дома и авто',
-        shortTitle: 'Свечи и диффузоры',
+        id: 'barber',
+        category: 'Барбершоп (Dikidi)',
+        brand: 'Авторский барбершоп (Dikidi)',
+        shortBrand: 'Барбершоп',
+        emoji: '💈',
+        pinColor: '#0284c7',
+        bookingOnly: true,
+        title: 'Стрижка + Борода + Уход',
+        shortTitle: 'Барбер-комплекс',
         allInPrice: 15000,
         giftRetailValue: 12500,
         fulfillmentPool: 2500,
         hours: '10:00–21:00',
-        branchCount: '3 филиала в Алматы',
+        branchCount: '1 студия (Центр • запись в Dikidi)',
         branchCoords: [
-          { name: 'ул. Кабанбай батыра, 91', lat: 43.2512, lng: 76.9435, crossing: 'уг. ул. Панфилова (напротив ГАТОБ им. Абая)', district: 'Алмалинский' },
-          { name: 'пр. Толе би, 187', lat: 43.2521, lng: 76.8982, crossing: 'уг. пр. Гагарина и ул. Жарокова (ТД «Тумар»)', district: 'Алмалинский' },
-          { name: 'ул. Кабдолова, 1/8', lat: 43.2355, lng: 76.8315, crossing: 'уг. ул. Саин и пр. Алтынсарина (ТК «Армада»)', district: 'Ауэзовский' }
+          { name: 'Центр Алматы (студия партнёра Dikidi)', lat: 43.2465, lng: 76.9420, crossing: 'р-н ул. Курмангазы / пр. Назарбаева (точная точка при подтверждении)', district: 'Алмалинский' }
         ],
-        bonusName: 'Бесплатный рефилл автопарфюма или аромасаше для гардероба',
-        bonusRetail: 1500,
+        bonusName: 'Чёрная очищающая маска для лица + премиум-укладка (общая ценность ~15 000 ₸)',
+        bonusRetail: 2500,
         bonusWholesaleCost: 1500,
         partnerPct: 20,
         products: [
           {
-            title: 'Свеча WoodWick с деревянным фитилем + Спички',
-            desc: 'Ароматическая свеча с эффектом потрескивания камина',
-            tag: 'Топ подарок'
+            title: 'Комплекс «Полная перезагрузка»: Стрижка + Борода + Чёрная маска',
+            desc: 'Мужская стрижка, моделирование бороды, очищающая маска и укладка • запись в Dikidi',
+            tag: 'Выгода ~15 000 ₸'
           },
           {
-            title: 'Диффузор для дома Millefiori Milano (100 мл)',
-            desc: 'Итальянский интерьерный парфюм с ротанговыми палочками',
-            tag: 'Унисекс'
+            title: 'Стрижка + Королевское бритьё горячим полотенцем + Тоник',
+            desc: 'Классический барбер-ритуал с распариванием и уходом после бритья',
+            tag: 'Премиум уход'
           },
           {
-            title: 'Сет «Авто + Офис»: Автопарфюм + Мини-диффузор',
-            desc: 'Премиальный аромат в машину и диффузор на рабочий стол',
-            tag: 'Для мужчин и авто'
+            title: 'Стрижка + Уход для кожи головы и укладка (действует 60 дней)',
+            desc: 'Удобная запись на декабрь, январь или февраль без предновогодней спешки',
+            tag: 'Гибкий слот'
           }
         ],
-        accentBg: 'from-violet-100 via-purple-50 to-amber-50',
+        accentBg: 'from-sky-100 via-slate-100 to-amber-50',
         svg: `
           <svg viewBox="0 0 120 100" class="w-full h-full">
-            <ellipse cx="60" cy="86" rx="40" ry="7" fill="#ddd6fe" />
-            <rect x="28" y="46" width="32" height="36" rx="6" fill="#fef3c7" stroke="#7c3aed" stroke-width="2.5"/>
-            <path d="M44 26 Q49 34 44 40 Q39 34 44 26 Z" fill="#f97316"/>
-            <rect x="68" y="42" width="24" height="40" rx="8" fill="#ede9fe" stroke="#6d28d9" stroke-width="2.5"/>
-            <rect x="75" y="34" width="10" height="8" rx="2" fill="#5b21b6"/>
-            <line x1="78" y1="34" x2="70" y2="16" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="80" y1="34" x2="80" y2="14" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="82" y1="34" x2="90" y2="16" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-        `
-      },
-      {
-        id: 'romantic',
-        category: 'Готовые букеты',
-        brand: 'Romantic Flowers',
-        shortBrand: 'Romantic',
-        emoji: '🌲',
-        pinColor: '#f43f5e',
-        title: 'Стандартизированные букеты',
-        shortTitle: 'Фикс. букеты',
-        allInPrice: 15000,
-        giftRetailValue: 12500,
-        fulfillmentPool: 2500,
-        hours: '00:00–24:00 (24/7)',
-        branchCount: '5 точек на карте (сеть 10+)',
-        branchCoords: [
-          { name: 'пр. Абая, 115', lat: 43.2399, lng: 76.9025, crossing: 'уг. ул. Ауэзова (м. Алатау / Жарокова — 24/7)', district: 'Бостандыкский' },
-          { name: 'пр. Абылай хана, 64', lat: 43.2598, lng: 76.9430, crossing: 'уг. ул. Гоголя и пр. Жибек Жолы (ЦУМ / Арбат)', district: 'Алмалинский' },
-          { name: 'ул. Тимирязева, 20а', lat: 43.2275, lng: 76.9288, crossing: 'уг. ул. Байтурсынова (напротив КазНУ)', district: 'Бостандыкский' },
-          { name: 'ул. Радостовца, 292', lat: 43.2061, lng: 76.8976, crossing: 'уг. ул. Левитана (выше ТРЦ MEGA / Magnum)', district: 'Бостандыкский' },
-          { name: 'пр. Достык, 42', lat: 43.2515, lng: 76.9566, crossing: 'уг. ул. Кабанбай батыра и ул. Богенбай батыра', district: 'Медеуский' }
-        ],
-        bonusName: 'Бесплатная мини-коробка Raffaello или стеклянная ваза',
-        bonusRetail: 1500,
-        bonusWholesaleCost: 1500,
-        partnerPct: 20,
-        products: [
-          {
-            title: 'Новогодний бокс из датской ели «Нобилис»',
-            desc: 'Живая хвоя со свечами и декором (не осыпается 30+ дней)',
-            tag: 'Хит декабря'
-          },
-          {
-            title: 'Облако из 9 кустовых роз в фирменной сумочке',
-            desc: 'Нежно-розовые пионовидные кустовые розы в аквабоксе',
-            tag: 'Стандарт'
-          },
-          {
-            title: 'Белоснежный монобукет из хризантем и эвкалипта',
-            desc: 'Стильный стойкий букет (стоит до 2 недель)',
-            tag: 'Минимализм'
-          },
-          {
-            title: 'Пастельная композиция в шляпной коробке',
-            desc: 'Во флористической губке — ваза не требуется',
-            tag: 'Для офиса'
-          }
-        ],
-        accentBg: 'from-rose-100 via-pink-50 to-emerald-50',
-        svg: `
-          <svg viewBox="0 0 120 100" class="w-full h-full">
-            <rect x="36" y="54" width="48" height="32" rx="6" fill="#065f46" stroke="#064e3b" stroke-width="2"/>
-            <path d="M36 66 L84 66" stroke="#fbbf24" stroke-width="3"/>
-            <circle cx="44" cy="40" r="12" fill="#fda4af" stroke="#e11d48" stroke-width="2"/>
-            <circle cx="60" cy="32" r="13" fill="#f43f5e" stroke="#be123c" stroke-width="2"/>
-            <circle cx="76" cy="40" r="12" fill="#fecdd3" stroke="#e11d48" stroke-width="2"/>
-            <path d="M28 50 L40 42 M92 50 L80 42" stroke="#16a34a" stroke-width="4" stroke-linecap="round"/>
-            <circle cx="54" cy="48" r="5" fill="#fbbf24"/>
-            <circle cx="68" cy="48" r="5" fill="#f59e0b"/>
+            <rect x="44" y="20" width="32" height="62" rx="10" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+            <path d="M46 34 L74 26 M46 50 L74 42 M46 66 L74 58" stroke="#e11d48" stroke-width="6"/>
+            <path d="M46 42 L74 34 M46 58 L74 50 M46 74 L74 66" stroke="#0284c7" stroke-width="6"/>
+            <rect x="40" y="16" width="40" height="8" rx="4" fill="#0f172a"/>
+            <rect x="40" y="78" width="40" height="8" rx="4" fill="#0f172a"/>
           </svg>
         `
       }
@@ -649,7 +685,7 @@
       { id: 'bday', label: '🎂 С Днём Рождения!' }
     ];
 
-    const DEFAULT_NY_NOTE = 'С наступающим Новым 2027 годом! Спасибо за отличную работу в этом году. Выберите подарок по душе — торт BAL, спешелти-кофе Bowler, сет «Орех», аромат для дома или хвойный бокс Romantic — и заберите с бесплатным бонусом или курьером 🎄✨';
+    const DEFAULT_NY_NOTE = 'С наступающим Новым 2027 годом! Спасибо за отличную работу в этом году. Выберите любой подарок из 6 брендов Алматы — торт BAL, клубнику Deliberry, настолку Hobby Games, массаж Luxe, уход Kaori или барбершоп — по душе! 🎄✨';
 
     const state = {
       step: 1,
@@ -745,13 +781,13 @@
         gift.branchCoords.forEach((br, idx) => {
           const isSelected = gift.id === state.selectedGiftId && idx === state.selectedBranchIdx;
           const compactMode = z <= 13 && !isSelected;
-          const pinClass = compactMode ? 'qutty-pin-compact' : 'qutty-pin';
+          const pinClass = compactMode ? 'syila-pin-compact' : 'syila-pin';
           const iconSize = compactMode ? [74, 24] : [116, 28];
           const iconAnchor = compactMode ? [37, 12] : [58, 14];
 
           const icon = L.divIcon({
-            className: 'qutty-dg-wrap',
-            html: `<div style="display:flex;justify-content:center;"><div class="${pinClass} ${isSelected ? 'qutty-pin-active' : ''}" style="background:${gift.pinColor}">${gift.emoji} ${gift.shortBrand}</div></div>`,
+            className: 'syila-dg-wrap',
+            html: `<div style="display:flex;justify-content:center;"><div class="${pinClass} ${isSelected ? 'syila-pin-active' : ''}" style="background:${gift.pinColor}">${gift.emoji} ${gift.shortBrand}</div></div>`,
             iconSize,
             iconAnchor
           });
@@ -935,6 +971,8 @@
       state.selectedGiftId = giftId;
       state.selectedProductIdx = 0;
       state.selectedBranchIdx = 0;
+      const g = GIFTS.find(x => x.id === giftId);
+      if (g && g.bookingOnly) state.claimTab = 'pickup';
       if (!state.mapFilter.includes(giftId)) {
         state.mapFilter = [...state.mapFilter, giftId];
       }
@@ -1058,8 +1096,8 @@
         state.botLogs.push({
           time: nowTime(),
           sender: 'merchant',
-          title: '🛍️ Подарок готов на витрине выдачи!',
-          body: `Для <b>${escapeHtml(state.recipientName)}</b> отправлен пуш в Telegram (@QuttyGiftBot): «Ваш торт от ${gift.brand} и бесплатный бонус ждут вас: ${br.name} (${br.crossing})!»`
+          title: gift.bookingOnly ? '📅 Запись подтверждена!' : '🛍️ Подарок готов на витрине выдачи!',
+          body: `Для <b>${escapeHtml(state.recipientName)}</b> отправлен пуш в Telegram (@SyilaGiftBot): «Ваш подарок от ${gift.brand} и бесплатный бонус ждут вас: ${br.name} (${br.crossing})!»`
         });
       } else {
         const yandexQuote = state.surgeActive
@@ -1069,7 +1107,7 @@
           time: nowTime(),
           sender: 'system',
           title: '🛵 Курьер Яндекс (DeliveryByCourier → Авто)',
-          body: `Водитель <b>${state.courierName}</b> назначен через API.<br/>Тариф Яндекса (с пула Qutty Gift): <b>${formatKzt(yandexQuote)}</b>.`
+          body: `Водитель <b>${state.courierName}</b> назначен через API.<br/>Тариф Яндекса (с пула Syila): <b>${formatKzt(yandexQuote)}</b>.`
         });
       }
       renderAll();
@@ -1098,7 +1136,7 @@
           time: nowTime(),
           sender: 'system',
           title: '💳 Подарок оплачен в эскроу (15 000 ₸) • Ожидание выбора в Telegram',
-          body: `От <b>${escapeHtml(state.senderName)}</b> для <b>${escapeHtml(state.recipientName)}</b> • <b>${gift.brand}</b> (${prod.title}).<br/>⏳ После выбора точки в 2GIS заказ уйдёт в <b>iikoFront (iikoCloud API)</b> и дублируется в <b>@QuttyPartnerBot</b>.`
+          body: `От <b>${escapeHtml(state.senderName)}</b> для <b>${escapeHtml(state.recipientName)}</b> • <b>${gift.brand}</b> (${prod.title}).<br/>⏳ После выбора точки в 2GIS заказ уйдёт в <b>iiko / Dikidi</b> и дублируется в <b>@SyilaPartnerBot</b>.`
         }
       ];
     }
@@ -1171,7 +1209,7 @@
                 : 'border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)]'
             }"
           >
-            🗺️ Все 5 (${TOTAL_BRANCHES})
+            🗺️ Все ${GIFTS.length} (${TOTAL_BRANCHES})
           </button>
           ${GIFTS.map(p => {
             const active = state.mapFilter.includes(p.id);
@@ -1262,16 +1300,16 @@
         <div class="flex items-start gap-2">
           <span class="text-base leading-none">🎄</span>
           <div>
-            <span class="font-bold text-emerald-500">Новогодний пилот (5 равных партнёров • 23 точки в 2GIS):</span>
-            <span class="text-[var(--foreground)]">Каждый сотрудник в Telegram сам выбирает бренд и подарок по душе (торт <b>BAL</b>, кофе <b>Bowler</b>, сет <b>Орех</b>, ароматы <b>Aromaty.kz</b> или хвойный бокс <b>Romantic</b>), филиал с бесплатным бонусом или курьера. Заказ заранее падает на кассу партнёра.</span>
+            <span class="font-bold text-emerald-500">Syila Алматы (6 равных партнёров • ${TOTAL_BRANCHES} точек в 2GIS):</span>
+            <span class="text-[var(--foreground)]">Каждый сотрудник в Telegram выбирает любой из 6 брендов по душе: торт <b>BAL</b>, клубнику <b>Deliberry</b>, настолку <b>Hobby Games</b>, массаж <b>Luxe</b>, уход <b>Kaori</b> или <b>барбершоп (Dikidi)</b>.</span>
           </div>
         </div>
         <span class="shrink-0 font-semibold px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-500">
-          Выбор сотрудника • 23 точки
+          2 еда • 2 ритейл • 2 услуги
         </span>
       `;
-      step3Title.textContent = '3. Самовывоз+Бонус / Курьер';
-      step3Sub.textContent = '5 брендов • 23 точки в 2GIS';
+      step3Title.textContent = '3. Самовывоз / Запись / Курьер';
+      step3Sub.textContent = `6 брендов • ${TOTAL_BRANCHES} точек в 2GIS`;
 
       for (let i = 1; i <= 4; i++) {
         const pill = document.getElementById(`nav-step-${i}`);
@@ -1384,11 +1422,11 @@
       const checkoutBlock = `
         <div class="p-3 rounded-2xl bg-sky-50 border border-sky-200 space-y-2">
           <div class="flex items-center justify-between text-xs font-bold text-sky-950">
-            <span>🎄 Новогодний пилот • Telegram без адреса</span>
+            <span>🎄 Новогодний пилот Syila • Telegram без адреса</span>
             <span class="px-2 py-0.5 rounded-full bg-white text-sky-700 text-[10px]">0 ₸ наценка</span>
           </div>
           <p class="text-[11px] text-sky-900 leading-relaxed">
-            Персональная ссылка в <b>Telegram</b> для <b>${escapeHtml(state.recipientName)}</b> от <b>${escapeHtml(state.senderName)}</b> — получатель сам выберет любой из 5 брендов (не только торт!), точку в 2GIS и слот!
+            Персональная ссылка в <b>Telegram</b> для <b>${escapeHtml(state.recipientName)}</b> от <b>${escapeHtml(state.senderName)}</b> — получатель сам выберет любой из <b>6 брендов</b> (торт, ягоды, настолку, спа, косметику или барбершоп)!
           </p>
           <div class="grid grid-cols-2 gap-2">
             <div>
@@ -1415,8 +1453,8 @@
           <div class="flex items-center gap-2">
             <span class="text-lg">🎄</span>
             <div>
-              <div class="text-sm font-extrabold text-white leading-none">Qutty Gift Алматы</div>
-              <div class="text-[10px] font-semibold text-amber-200">Новогодний пилот • 5 брендов (${TOTAL_BRANCHES} точки)</div>
+              <div class="text-sm font-extrabold text-white leading-none">Syila Алматы</div>
+              <div class="text-[10px] font-semibold text-amber-200">Новогодний пилот • 6 брендов (${TOTAL_BRANCHES} точек)</div>
             </div>
           </div>
           <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-300 text-slate-950">
@@ -1426,7 +1464,7 @@
 
         <div class="p-4 space-y-3.5">
           <div class="space-y-1.5">
-            <div class="text-[10px] font-bold uppercase tracking-wide text-slate-500">5 равных партнёров пилота:</div>
+            <div class="text-[10px] font-bold uppercase tracking-wide text-slate-500">6 равных партнёров пилота:</div>
             ${renderPartnerSwitcherHtml()}
           </div>
 
@@ -1466,26 +1504,26 @@
       if (!state.unwrapped) {
         return `
           <div class="sticky top-0 z-10 bg-sky-600 text-white px-4 py-3 flex items-center justify-between shadow-xs">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-full bg-white text-sky-600 font-extrabold text-xs flex items-center justify-center shadow-xs">Q</div>
-              <div>
-                <div class="text-xs font-bold">Telegram • @QuttyGiftBot</div>
-                <div class="text-[10px] text-sky-100">Экран получателя • Без ценников</div>
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full bg-white text-sky-600 font-extrabold text-xs flex items-center justify-center shadow-xs">S</div>
+                <div>
+                  <div class="text-xs font-bold">Telegram • @SyilaGiftBot</div>
+                  <div class="text-[10px] text-sky-100">Экран получателя • Без ценников</div>
+                </div>
               </div>
+              <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">syila.kz</span>
             </div>
-            <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">${gift.shortBrand}</span>
-          </div>
 
-          <div class="flex-1 p-4 flex flex-col justify-between bg-sky-50/70 space-y-4">
-            <div class="space-y-3">
-              <div class="mx-auto w-fit px-3 py-0.5 rounded-full bg-white/90 text-[10px] font-semibold text-slate-600 shadow-xs">
-                Подарок в Telegram
-              </div>
+            <div class="flex-1 p-4 flex flex-col justify-between bg-sky-50/70 space-y-4">
+              <div class="space-y-3">
+                <div class="mx-auto w-fit px-3 py-0.5 rounded-full bg-white/90 text-[10px] font-semibold text-slate-600 shadow-xs">
+                  Подарок в Telegram
+                </div>
 
-              <div class="max-w-[90%] bg-white rounded-2xl rounded-tl-xs p-3 shadow-sm border border-sky-100 space-y-1">
-                <p class="text-xs text-slate-800 leading-relaxed">Привет! Тебе новогодний подарок от <b>${escapeHtml(state.senderName)}</b> для <b>${escapeHtml(state.recipientName)}</b> 🎄 Внутри можно выбрать <b>любой из 5 брендов Алматы</b> (торт BAL, кофе Bowler, сет «Орех», ароматы или букет Romantic) — самовывоз с бонусом или доставка курьером!</p>
-                <div class="text-[10px] text-sky-600 text-right font-semibold">02:20 ✓✓</div>
-              </div>
+                <div class="max-w-[90%] bg-white rounded-2xl rounded-tl-xs p-3 shadow-sm border border-sky-100 space-y-1">
+                  <p class="text-xs text-slate-800 leading-relaxed">Привет! Тебе новогодний подарок от <b>${escapeHtml(state.senderName)}</b> для <b>${escapeHtml(state.recipientName)}</b> 🎄 Внутри можно выбрать <b>любой из 6 брендов Алматы</b> (торт BAL, клубнику Deliberry, настолки Hobby Games, массаж Luxe, уход Kaori или барбершоп)!</p>
+                  <div class="text-[10px] text-sky-600 text-right font-semibold">02:20 ✓✓</div>
+                </div>
 
               <div class="max-w-[92%] bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-900 rounded-2xl rounded-tl-xs p-3.5 shadow-md border border-amber-300/60 space-y-3 relative overflow-hidden">
                 <span class="ny-twinkle absolute top-3 right-12 text-amber-200/80 text-xs pointer-events-none">❄</span>
@@ -1627,26 +1665,33 @@
       const prod = getProduct();
       const br = getSelectedBranchObj();
 
-      const tabToggle = `
-        <div class="grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-slate-200/80">
-          <button
-            onclick="state.claimTab='pickup'; renderAll();"
-            class="py-2 px-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-              state.claimTab === 'pickup' ? 'bg-white text-slate-950 shadow-xs' : 'text-slate-600'
-            }"
-          >
-            🏪 Самовывоз + Бонус
-          </button>
-          <button
-            onclick="state.claimTab='delivery'; renderAll();"
-            class="py-2 px-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-              state.claimTab === 'delivery' ? 'bg-white text-slate-950 shadow-xs' : 'text-slate-600'
-            }"
-          >
-            🛵 Курьер Яндекс
-          </button>
-        </div>
-      `;
+      const tabToggle = gift.bookingOnly
+        ? `
+          <div class="p-2.5 rounded-2xl bg-sky-50 border border-sky-200 text-xs font-bold text-sky-950 flex items-center justify-between gap-2">
+            <span>📅 Услуга по записи (визит в студию)</span>
+            <span class="px-2 py-0.5 rounded-full bg-white text-sky-700 text-[10px]">Без курьера • 60 дней</span>
+          </div>
+        `
+        : `
+          <div class="grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-slate-200/80">
+            <button
+              onclick="state.claimTab='pickup'; renderAll();"
+              class="py-2 px-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                state.claimTab === 'pickup' ? 'bg-white text-slate-950 shadow-xs' : 'text-slate-600'
+              }"
+            >
+              🏪 Самовывоз + Бонус
+            </button>
+            <button
+              onclick="state.claimTab='delivery'; renderAll();"
+              class="py-2 px-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                state.claimTab === 'delivery' ? 'bg-white text-slate-950 shadow-xs' : 'text-slate-600'
+              }"
+            >
+              🛵 Курьер Яндекс
+            </button>
+          </div>
+        `;
 
       const advanceNoticeBanner = gift.id === 'bal'
         ? `
@@ -1658,32 +1703,51 @@
             <div class="text-amber-900 leading-snug">Для целых тортов выбор фиксируется минимум за 1 день (до 18:00 накануне), чтобы цех отгрузил свежий торт в нужный филиал.</div>
           </div>
         `
-        : `
-          <div class="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-950 space-y-0.5">
-            <div class="font-extrabold flex items-center justify-between gap-2">
-              <span>🎁 Резерв подарка в ${gift.brand}</span>
-              <span class="px-1.5 py-0.5 rounded bg-emerald-200/80 text-[10px] font-bold shrink-0">Гарантия выдачи</span>
+        : gift.bookingOnly
+          ? `
+            <div class="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-950 space-y-0.5">
+              <div class="font-extrabold flex items-center justify-between gap-2">
+                <span>🗓️ ${gift.id === 'barber' ? 'Запись с привязкой к Dikidi' : 'Онлайн-запись на визит'}</span>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-200/80 text-[10px] font-bold shrink-0">Действует до 28 фев</span>
+              </div>
+              <div class="text-emerald-900 leading-snug">Запишитесь на декабрь, январь или февраль без предновогодней спешки. ${gift.id === 'barber' ? 'Мастер подтверждает время из Dikidi в @SyilaPartnerBot.' : 'Администратор подтверждает слот в @SyilaPartnerBot.'}</div>
             </div>
-            <div class="text-emerald-900 leading-snug">Выберите удобное 2-часовое окно (T-1 до 18:00 для корпоративных отгрузок или доступный слот филиала).</div>
-          </div>
+          `
+          : `
+            <div class="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-950 space-y-0.5">
+              <div class="font-extrabold flex items-center justify-between gap-2">
+                <span>🎁 Резерв подарка в ${gift.brand}</span>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-200/80 text-[10px] font-bold shrink-0">Гарантия выдачи</span>
+              </div>
+              <div class="text-emerald-900 leading-snug">Выберите удобное 2-часовое окно (T-1 до 18:00 для корпоративных отгрузок или доступный слот филиала).</div>
+            </div>
+          `;
+
+      const slotSelectHtml = gift.bookingOnly
+        ? `
+          <select onchange="state.pickupTime=this.value" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs font-semibold text-slate-800">
+            <option ${state.pickupTime==='26 декабря, 16:00–18:00 (слот Dikidi / запись)'?'selected':''}>26 декабря, 16:00–18:00 (слот Dikidi / запись)</option>
+            <option ${state.pickupTime==='29 декабря, 14:00–16:00 (слот Dikidi / запись)'?'selected':''}>29 декабря, 14:00–16:00 (слот Dikidi / запись)</option>
+            <option ${state.pickupTime==='5 января, 15:00–17:00 (после праздников)'?'selected':''}>5 января, 15:00–17:00 (после праздников)</option>
+            <option ${state.pickupTime==='12 января, 18:00–20:00 (вечерний слот)'?'selected':''}>12 января, 18:00–20:00 (вечерний слот)</option>
+          </select>
+        `
+        : `
+          <select onchange="state.pickupTime=this.value" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs font-semibold text-slate-800">
+            <option ${state.pickupTime==='25 декабря, 14:00–16:00 (Новогодний пилот T-1)'?'selected':''}>25 декабря, 14:00–16:00 (Новогодний пилот T-1)</option>
+            <option ${state.pickupTime==='26 декабря, 16:00–18:00 (Новогодний пилот T-1)'?'selected':''}>26 декабря, 16:00–18:00 (Новогодний пилот T-1)</option>
+            <option ${state.pickupTime==='28 декабря, 12:00–14:00 (заявка в цех T-1)'?'selected':''}>28 декабря, 12:00–14:00 (заявка в цех T-1)</option>
+            <option ${state.pickupTime==='29 декабря, 18:00–20:00 (заявка в цех T-1)'?'selected':''}>29 декабря, 18:00–20:00 (заявка в цех T-1)</option>
+            <option ${state.pickupTime==='Завтра, 14:00–16:00 (заявка в цех T-1)'?'selected':''}>Завтра, 14:00–16:00 (заявка в цех T-1)</option>
+          </select>
         `;
 
-      const slotSelectHtml = `
-        <select onchange="state.pickupTime=this.value" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs font-semibold text-slate-800">
-          <option ${state.pickupTime==='25 декабря, 14:00–16:00 (Новогодний пилот T-1)'?'selected':''}>25 декабря, 14:00–16:00 (Новогодний пилот T-1)</option>
-          <option ${state.pickupTime==='26 декабря, 16:00–18:00 (Новогодний пилот T-1)'?'selected':''}>26 декабря, 16:00–18:00 (Новогодний пилот T-1)</option>
-          <option ${state.pickupTime==='28 декабря, 12:00–14:00 (заявка в цех T-1)'?'selected':''}>28 декабря, 12:00–14:00 (заявка в цех T-1)</option>
-          <option ${state.pickupTime==='29 декабря, 18:00–20:00 (заявка в цех T-1)'?'selected':''}>29 декабря, 18:00–20:00 (заявка в цех T-1)</option>
-          <option ${state.pickupTime==='Завтра, 14:00–16:00 (заявка в цех T-1)'?'selected':''}>Завтра, 14:00–16:00 (заявка в цех T-1)</option>
-        </select>
-      `;
-
-      if (state.claimTab === 'pickup') {
+      if (state.claimTab === 'pickup' || gift.bookingOnly) {
         return `
           <div class="sticky top-0 z-10 bg-amber-300 px-4 py-3 flex items-center justify-between border-b border-amber-400/50">
             <button onclick="goToStep(2)" class="text-xs font-bold text-slate-900 cursor-pointer">← Выбор</button>
             <span class="text-xs font-extrabold text-slate-950">${gift.brand}</span>
-            <span class="text-[11px] font-bold text-emerald-900">🏭 T-1 под цех</span>
+            <span class="text-[11px] font-bold text-emerald-900">${gift.bookingOnly ? '📅 Запись' : '🏪 Самовывоз'}</span>
           </div>
 
           <div class="p-4 space-y-3">
@@ -1692,12 +1756,12 @@
 
             <div class="p-3 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-300 flex items-center gap-3">
               ${gift.bonusPhoto
-                ? `<img src="${gift.bonusPhoto}" alt="Бонус BAL" class="w-12 h-12 rounded-xl object-cover border border-emerald-200 shrink-0" />`
+                ? `<img src="${gift.bonusPhoto}" alt="Бонус" class="w-12 h-12 rounded-xl object-cover border border-emerald-200 shrink-0" />`
                 : ''
               }
               <div class="space-y-0.5 flex-1 min-w-0">
                 <div class="flex items-center justify-between gap-1">
-                  <span class="text-xs font-extrabold text-emerald-900">🎁 Бонус за самовывоз</span>
+                  <span class="text-xs font-extrabold text-emerald-900">${gift.bookingOnly ? '🎁 Бонус к визиту' : '🎁 Бонус за самовывоз'}</span>
                   <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white">БЕСПЛАТНО</span>
                 </div>
                 <div class="text-xs font-bold text-emerald-800 leading-snug">${gift.bonusName}</div>
@@ -1705,13 +1769,13 @@
             </div>
 
             <div class="p-3 rounded-2xl bg-white border border-slate-200 space-y-1.5">
-              <div class="text-xs font-extrabold text-slate-900">1. Выбранный набор (${gift.brand})</div>
+              <div class="text-xs font-extrabold text-slate-900">1. Выбранный вариант (${gift.brand})</div>
               ${renderProductCardsHtml(gift)}
             </div>
 
             <div class="p-3 rounded-2xl bg-white border border-slate-200 space-y-2">
               <div class="flex items-center justify-between">
-                <div class="text-xs font-extrabold text-slate-900">2. Точка и дата/время визита (предзаказ T-1)</div>
+                <div class="text-xs font-extrabold text-slate-900">${gift.bookingOnly ? '2. Студия и слот записи' : '2. Точка и дата/время визита'}</div>
                 <button onclick="zoomMainDgBranch()" class="text-[11px] font-bold text-emerald-700 underline cursor-pointer">
                   Показать в 2GIS →
                 </button>
@@ -1722,7 +1786,7 @@
                 `).join('')}
               </select>
               <div class="text-[11px] text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200">
-                🔀 <b>Перекрёсток:</b> ${br.crossing}
+                🔀 <b>Ориентир:</b> ${br.crossing}
               </div>
               ${slotSelectHtml}
             </div>
@@ -1731,7 +1795,7 @@
               onclick="submitPickupClaim()"
               class="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 text-white font-extrabold text-xs hover:bg-emerald-700 active:scale-[0.99] transition shadow-md cursor-pointer"
             >
-              🏪 Забронировать самовывоз (T-1) и QR-код
+              ${gift.bookingOnly ? '📅 Забронировать запись и получить QR-код' : '🏪 Забронировать самовывоз и QR-код'}
             </button>
           </div>
         `;
@@ -1835,7 +1899,7 @@
                 </p>
                 <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-left space-y-1">
                   <div class="text-xs font-extrabold text-amber-900">🎁 Понравилось распаковывать?</div>
-                  <div class="text-[11px] text-amber-800">Отправьте новогодний торт ${gift.brand} коллеге или другу в Telegram — промокод <b>QUTTY1000</b> подарит скидку 1 000 ₸!</div>
+                  <div class="text-[11px] text-amber-800">Отправьте новогодний подарок из ${gift.brand} коллеге или другу в Telegram — промокод <b>SYILA1000</b> подарит скидку 1 000 ₸!</div>
                 </div>
                 <button onclick="resetDemo()" class="w-full py-2.5 rounded-xl bg-slate-950 text-white text-xs font-bold cursor-pointer">
                   Начать демо заново →
@@ -1858,7 +1922,9 @@
                   </div>
                   <div class="text-[11px] text-slate-600"><b>${br.name}</b> (${br.crossing}) • ${state.pickupTime}</div>
                   <div class="text-[10px] text-sky-800 bg-sky-50 border border-sky-200 rounded-xl py-1.5 px-2 leading-snug">
-                    🔔 Не успеваете забрать сегодня? Бот <b>@QuttyGiftBot</b> напишет и предложит переключиться на курьера Яндекса.
+                    ${gift.bookingOnly
+                      ? '📅 Действует до конца февраля 2027. Перенести время можно в <b>@SyilaGiftBot</b>.'
+                      : '🔔 Не успеваете забрать сегодня? Бот <b>@SyilaGiftBot</b> напишет и предложит переключиться на курьера Яндекса.'}
                   </div>
 
                   <div class="p-2.5 rounded-2xl bg-slate-50 border border-dashed border-slate-300 flex flex-col items-center gap-2">
@@ -1893,7 +1959,7 @@
 
       const stage = state.orderStage || 1;
       const steps = [
-        { num: 1, title: 'Заказ создан на кассе ' + gift.brand, sub: 'iikoCloud API (DeliveryByCourier) + @QuttyPartnerBot' },
+        { num: 1, title: 'Заказ создан на кассе ' + gift.brand, sub: 'iikoCloud API (DeliveryByCourier) + @SyilaPartnerBot' },
         { num: 2, title: 'Сборка подарка', sub: `${prod.title}` },
         { num: 3, title: 'Курьер Яндекс в пути', sub: `${state.courierName}` },
         { num: 4, title: 'Доставлено!', sub: `Для ${escapeHtml(state.recipientName)}` }
@@ -1909,7 +1975,7 @@
         <div class="p-4 space-y-3.5">
           <div class="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-3">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-slate-500">Заказ #QG-8421</span>
+              <span class="text-xs font-bold text-slate-500">Заказ #SY-8421</span>
               <span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${stage === 4 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
                 ${stage === 1 ? 'Ждём партнёра' : stage === 2 ? 'Собирается' : stage === 3 ? 'Курьер в пути' : 'Доставлен'}
               </span>
@@ -1935,7 +2001,7 @@
 
           <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
             <div class="font-bold">🎁 Скидка 1 000 ₸ на следующий подарок</div>
-            <p class="text-[11px] text-amber-800">Вместо сдачи на балансе дарим промокод <b>QUTTY1000</b> — получатель сам станет вашим B2C-клиентом!</p>
+            <p class="text-[11px] text-amber-800">Вместо сдачи на балансе дарим промокод <b>SYILA1000</b> — получатель сам станет вашим B2C-клиентом!</p>
           </div>
         </div>
       `;
@@ -1950,8 +2016,11 @@
       if (state.botLogs.length === 0) {
         feed.innerHTML = `
           <div class="p-3 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs text-[var(--muted-foreground)] space-y-1.5">
-            <div class="font-semibold text-[var(--foreground)]">Касса / бот готов к приёму заказа • ${gift.brand} (${br.name})</div>
-            <p>Заказы поступают в <b>${gift.brand}</b> через <b>iikoCloud API</b> (<code>completeBefore</code>) или <b>@QuttyPartnerBot</b>. Для тортов BAL действует предзаказ <b>до 18:00 T-1</b> под утреннюю логистику цеха — <b>0% списаний</b> (<code>DeliverySelf</code> = <b>11 200 ₸</b>, <code>DeliveryByCourier</code> = <b>10 000 ₸</b>).</p>
+            <div class="font-semibold text-[var(--foreground)]">Касса / запись готова • ${gift.brand} (${br.name})</div>
+            <p>${gift.bookingOnly
+              ? `Услуга по записи (${gift.id === 'barber' ? 'Dikidi + @SyilaPartnerBot' : '@SyilaPartnerBot'}): без курьера, действует 60 дней, выплата партнёру <b>11 200 ₸</b> (маржа Syila <b>3 800 ₸</b>).`
+              : `Заказы поступают в <b>${gift.brand}</b> через <b>iikoCloud API</b> (<code>completeBefore</code>) или <b>@SyilaPartnerBot</b>. Для тортов BAL действует предзаказ <b>до 18:00 T-1</b> под утреннюю логистику цеха — <b>0% списаний</b> (<code>DeliverySelf</code> = <b>11 200 ₸</b>, <code>DeliveryByCourier</code> = <b>10 000 ₸</b>).`
+            }</p>
           </div>
         `;
       } else {
@@ -1994,7 +2063,7 @@
         const isPickup = state.redemptionType === 'pickup';
         actions.innerHTML = `
           <div class="text-[11px] font-semibold text-[var(--muted-foreground)] mb-1.5">
-            Касса iikoFront + кнопки сотрудника в @QuttyPartnerBot:
+            ${gift.bookingOnly ? 'Dikidi / @SyilaPartnerBot (подтверждение слота):' : 'Касса iikoFront + кнопки сотрудника в @SyilaPartnerBot:'}
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <button
@@ -2006,7 +2075,7 @@
                   : 'bg-sky-500 text-white border-sky-600 hover:bg-sky-600 cursor-pointer'
               }"
             >
-              ${state.orderStage >= 2 ? '✓ В iikoFront' : '✅ Принять на кассу'}
+              ${state.orderStage >= 2 ? '✓ Подтверждено' : (gift.bookingOnly ? '✅ Подтвердить слот' : '✅ Принять на кассу')}
             </button>
             <button
               onclick="botDispatchCourier()"
@@ -2018,8 +2087,8 @@
               }"
             >
               ${state.orderStage >= 3
-                ? (isPickup ? '✓ Готов на витрине' : '✓ Курьер вызван')
-                : (isPickup ? '🛍️ Готово к выдаче' : '🛵 Вызвать Яндекс')}
+                ? (gift.bookingOnly ? '✓ Ждёт гостя' : isPickup ? '✓ Готов на витрине' : '✓ Курьер вызван')
+                : (gift.bookingOnly ? '📅 Напомнить гостю' : isPickup ? '🛍️ Готово к выдаче' : '🛵 Вызвать Яндекс')}
             </button>
             <button
               onclick="botMarkDelivered()"
@@ -2069,7 +2138,7 @@
           <div class="flex justify-between"><span>Чек (база + бонус 1.5k):</span><b class="text-[var(--foreground)]">15 000 ₸</b></div>
           <div class="flex justify-between"><span>Выплата ${gift.brand}:</span><b class="text-emerald-500">${formatKzt(pickupPayout)} (+1 200 ₸)</b></div>
           <div class="flex justify-between"><span>Яндекс Курьер:</span><b>0 ₸</b></div>
-          <div class="flex justify-between pt-1 border-t border-[var(--border)]"><span>Комиссия Qutty + пул:</span><b class="text-emerald-500">${formatKzt(pickupPlatformNet)} (25,3%)</b></div>
+          <div class="flex justify-between pt-1 border-t border-[var(--border)]"><span>Комиссия Syila + пул:</span><b class="text-emerald-500">${formatKzt(pickupPlatformNet)} (25,3%)</b></div>
         </div>
       `;
 
@@ -2078,23 +2147,36 @@
           ? 'bg-amber-500/10 border-amber-500/50 ring-1 ring-amber-500/30'
           : 'bg-[var(--background)] border-[var(--border)]'
       }`;
-      cardDelivery.innerHTML = `
-        <div class="flex items-center justify-between font-bold">
-          <span>🛵 DeliveryByCourier (Яндекс)</span>
-          <span class="text-amber-500">${state.surgeActive ? 'Защита от пика' : 'Стандарт'}</span>
-        </div>
-        <div class="mt-2 space-y-1 text-[var(--muted-foreground)]">
-          <div class="flex justify-between"><span>Оплата (с учётом пика):</span><b class="text-[var(--foreground)]">${formatKzt(gift.allInPrice + recipientTopUp)}</b></div>
-          <div class="flex justify-between"><span>Выплата ${gift.brand}:</span><b class="text-[var(--foreground)]">${formatKzt(delPayout)}</b></div>
-          <div class="flex justify-between"><span>Тариф Яндекса:</span><b class="${state.surgeActive && state.surgeChoice==='rush' ? 'text-rose-500' : ''}">${formatKzt(yandexCost)}</b></div>
-          <div class="flex justify-between pt-1 border-t border-[var(--border)]"><span>Комиссия Qutty (нетто):</span><b class="text-[var(--foreground)]">${formatKzt(delPlatformNet)}</b></div>
-        </div>
-      `;
+      cardDelivery.innerHTML = gift.bookingOnly
+        ? `
+          <div class="flex items-center justify-between font-bold">
+            <span>📅 Запись на услугу (без курьера)</span>
+            <span class="text-emerald-500">Выше маржа Syila</span>
+          </div>
+          <div class="mt-2 space-y-1 text-[var(--muted-foreground)]">
+            <div class="flex justify-between"><span>Пакет / визит (с допом):</span><b class="text-[var(--foreground)]">15 000 ₸</b></div>
+            <div class="flex justify-between"><span>Выплата ${gift.shortBrand}:</span><b class="text-emerald-500">11 200 ₸</b></div>
+            <div class="flex justify-between"><span>Яндекс Курьер:</span><b>0 ₸ (не требуется)</b></div>
+            <div class="flex justify-between pt-1 border-t border-[var(--border)]"><span>Чистая маржа Syila:</span><b class="text-emerald-500">3 800 ₸ (25,3%)</b></div>
+          </div>
+        `
+        : `
+          <div class="flex items-center justify-between font-bold">
+            <span>🛵 DeliveryByCourier (Яндекс)</span>
+            <span class="text-amber-500">${state.surgeActive ? 'Защита от пика' : 'Стандарт'}</span>
+          </div>
+          <div class="mt-2 space-y-1 text-[var(--muted-foreground)]">
+            <div class="flex justify-between"><span>Оплата (с учётом пика):</span><b class="text-[var(--foreground)]">${formatKzt(gift.allInPrice + recipientTopUp)}</b></div>
+            <div class="flex justify-between"><span>Выплата ${gift.brand}:</span><b class="text-[var(--foreground)]">${formatKzt(delPayout)}</b></div>
+            <div class="flex justify-between"><span>Тариф Яндекса:</span><b class="${state.surgeActive && state.surgeChoice==='rush' ? 'text-rose-500' : ''}">${formatKzt(yandexCost)}</b></div>
+            <div class="flex justify-between pt-1 border-t border-[var(--border)]"><span>Комиссия Syila (нетто):</span><b class="text-[var(--foreground)]">${formatKzt(delPlatformNet)}</b></div>
+          </div>
+        `;
 
       econ.innerHTML = `
-        <div class="font-bold text-[var(--foreground)]">5 равных партнёров (23 точки в 2GIS) + интеграция с кассой iiko / @QuttyPartnerBot</div>
+        <div class="font-bold text-[var(--foreground)]">6 равных партнёров (${TOTAL_BRANCHES} точек в 2GIS): 2 еда • 2 ритейл • 2 услуги</div>
         <p class="text-[var(--muted-foreground)] leading-relaxed">
-          Единая экономика для всех 5 брендов пилота (<code>DeliverySelf</code> = <b>11 200 ₸</b>, <code>DeliveryByCourier</code> = <b>10 000 ₸</b>). Для тортов BAL дополнительно действует строгий регламент <b>T-1 до 18:00</b> под центральный цех через <b>iikoCloud API</b> (<b>0% конфликта с Kwaaka</b>), остальные бренды работают через POS или <b>@QuttyPartnerBot</b>.
+          Для товаров (<code>BAL</code>, <code>Deliberry</code>, <code>Hobby Games</code>, <code>Kaori</code>) работают самовывоз <b>11 200 ₸</b> и Яндекс-курьер <b>10 000 ₸</b>. Для услуг (<code>Luxe Massage</code> и барбершоп с записью в <b>Dikidi</b>) курьер не нужен — каждая активация приносит Syila <b>3 800 ₸</b> маржи и действует 60 дней.
         </p>
       `;
     }
